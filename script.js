@@ -1,34 +1,53 @@
-
 // func that renders a single todo to the DOM
-function renderToDoToDOM(todo) {
+function renderToDoToDOM(todo, todoCategory) {
+
     const toDoContainer = document.querySelector('.toDoContainer');
     const todoItem = document.createElement('div');
     todoItem.classList.add('todoItem');
-    todoItem.insertAdjacentHTML('beforeend', ` 
-        <h2>Category: ${todo.category}</h2> 
-        <h2>Title: ${todo.title}</h2>
-        <p>Description: ${todo.description}</p> 
-        <p>Due Date: ${todo.dueDate}</p> 
-        <p>Priority: ${todo.priority}</p> 
-        <p>Notes: ${todo.notes}</p> 
-        <p>Completed: ${todo.isCompleted}</p> 
-        <button id="remBtn">Remove this todo</button> 
-        `);
-    toDoContainer.appendChild(todoItem);
 
-    const remBtn = todoItem.querySelector("#remBtn");
-    remBtn.addEventListener('click', () => {
-        remBtn.parentElement.remove();
-        TodoCategories.removeToDoFromLocalStorage(todo.category, todo.timestamp);
+    const category = document.createElement('h2');
+    category.textContent = `Category: ${todoCategory}`;
+
+    const title = document.createElement('h2');
+    title.textContent = `Title: ${todo.title}`;
+
+    const description = document.createElement('p');
+    description.textContent = `Description: ${todo.description}`;
+
+    const dueDate = document.createElement('p');
+    dueDate.textContent = `Due Date: ${todo.dueDate}`;
+
+    const priority = document.createElement('p');
+    priority.textContent = `Priority: ${todo.priority}`;
+
+    const notes = document.createElement('p');
+    notes.textContent = `Notes: ${todo.notes}`;
+
+    const isCompleted = document.createElement('p');
+    isCompleted.textContent = `Completed: ${todo.isCompleted}`;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = `Remove this todo`;
+    removeBtn.id = "remBtn";
+    removeBtn.addEventListener('click', ()=>{
+        todoItem.remove();
+        TodoCategories.deleteTodoFromCategory(todoCategory, todo.todoIdentifier);
     })
+
+    todoItem.appendChild(category);
+    todoItem.appendChild(title);
+    todoItem.appendChild(description);
+    todoItem.appendChild(dueDate);
+    todoItem.appendChild(priority);
+    todoItem.appendChild(notes);
+    todoItem.appendChild(isCompleted);
+    todoItem.appendChild(removeBtn);
+
+    toDoContainer.appendChild(todoItem);
 }
 
 
-
-
-
-
-
+// manages a single todo
 class NewToDo {
     constructor(title, description, dueDate, priority, notes) {
         this.title = title;
@@ -37,77 +56,40 @@ class NewToDo {
         this.priority = priority;
         this.notes = notes;
         this.isCompleted = false;
-        this.timestamp = Date.now();
+        this.todoIdentifier = Date.now(); // Unique identifier
     }
 
-    // method that saves newly created todos into localStorage
-    saveToLocalStorage(category) {
+    static toggleCompletion (category, todoIdentifier) {
+        const todos = TodoCategories.getToDos(category);
+        const targetToDo = todos.find(todo => todo.todoIdentifier === todoIdentifier);
 
-        // deserializing
-        let todos = JSON.parse(localStorage.getItem(category)) || [];
-
-        todos.push({
-            title: this.title,
-            description: this.description,
-            dueDate: this.dueDate,
-            priority: this.priority,
-            notes: this.notes,
-            isCompleted: this.isCompleted,
-            timestamp: this.timestamp,
-            category: category
-        });
-
-        // serializing
-        localStorage.setItem(category, JSON.stringify(todos));
-
+        if (targetToDo) {
+            targetToDo.isCompleted = !targetToDo.isCompleted;
+            localStorage.setItem(category, JSON.stringify(todos));
+        }
     }
 
-
-
-    // method that loads to-dos from the localStorage to display on page
-    static retrieveFromLocalStorage(category) {
-
-        return JSON.parse(localStorage.getItem(category)) || [];
-
+    static updatePriority(category, todoIdentifier, newPriority) {
+        const todos = TodoCategories.getToDos(category);
+        const targetToDo = todos.find(todo => todo.todoIdentifier === todoIdentifier);
+        if (targetToDo) {
+            targetToDo.priority = newPriority;
+            localStorage.setItem(category, JSON.stringify(todos));
+        } 
     }
 
-    setToDoComplete() {
-        this.isCompleted = true;
-        console.log(`${this.title} is completed.`);
-    }
-
-    changePriority(newPriority) {
-        this.priority = newPriority;
-        console.log(`${this.title} priority is changed to ${newPriority}`);
-    }
-
-    changeDueDate(newDueDate) {
-        this.dueDate = newDueDate;
-        console.log(`The due date of "${this.title}" is changed to ${newDueDate}`);
+    static updateDueDate(category, todoIdentifier, newDueDate) {
+        const todos = TodoCategories.getToDos(category);
+        const targetToDo = todos.find(todo => todo.toDoContainer === todoIdentifier);
+        if (targetToDo) {
+            targetToDo.dueDate = newDueDate;
+            localStorage.setItem(category, JSON.stringify(todos));
+        }
     }
 }
 
 
-
-
-
-// categories of to-dos
-// given: life, work, education
-// create a new category
-
-// let todoCategories = {
-//     life: [],
-//     work: [],
-//     education: [],
-//     createNewCat: function (catName) {
-//         if (!this[catName]) {
-//             this[catName] = [];
-//         }
-//         return this[catName];
-//     }
-// }
-
-
+// manages categories of todos
 class TodoCategories {
     constructor() {
         this.categories = {
@@ -124,30 +106,25 @@ class TodoCategories {
         return this.categories[catName];
     }
 
-    // addToDoToCategory(category, todo) {
-    //     if (!this.categories[category]) {
-    //         this.createNewCat(category);
-    //     }
-    //     this.categories[category].push(todo);
-    // }
+    static getToDos (category) {
+        return JSON.parse(localStorage.getItem(category)) || [];
+    }
 
-    static removeToDoFromLocalStorage(category, timestamp) {
-        let jsObj = JSON.parse(localStorage.getItem(category)) || [];
-        // console.log(jsObj);
-    
-        let updatedjsObj = jsObj.filter(todo => todo.timestamp !== timestamp)
-    
-        localStorage.setItem(category, JSON.stringify(updatedjsObj));
-        // console.log(updatedjsObj);
+    saveToDoToCategory (category, todo) {
+        const todos = TodoCategories.getToDos(category);
+        todos.push(todo);
+        localStorage.setItem(category, JSON.stringify(todos));
+
+    }
+
+    static deleteTodoFromCategory(category, todoIdentifier) {
+        const todos = TodoCategories.getToDos(category);
+        const updatedToDos = todos.filter(todo => todo.todoIdentifier !== todoIdentifier);
+        localStorage.setItem(category, JSON.stringify(updatedToDos));
     }
 }
 
-
-
-
-// app logic ends here
 // -----------------------------------------------------------------------------------------
-
 
 // creating a new todo
 let todo1 = new NewToDo(
@@ -158,28 +135,18 @@ let todo1 = new NewToDo(
     "i will try to complete it in time"
 )
 
-
 // access an existing or create a new category
 let todoCategories = new TodoCategories();
-todoCategories.createNewCat("leisure");
+todoCategories.saveToDoToCategory("work", todo1);
+TodoCategories.getToDos("work").forEach(todo => renderToDoToDOM(todo, "work"));
+// todoCategories.createNewCat("leisure");
 // todoCategories.categories["life"]
 // todoCategories.addToDoToCategory("life", todo1);
 
 
 // saving the todo to local storage
-todo1.saveToLocalStorage(Object.keys(todoCategories.categories).at(0));
+// todo1.saveToLocalStorage(Object.keys(todoCategories.categories).at(0));
 // Object.keys(todoCategories.categories).at(0)
-
-
-// Render all to-dos for a category
-NewToDo.retrieveFromLocalStorage("life").forEach(todo => renderToDoToDOM(todo));
-
-// adding a to-do into a certain category
-// todoCategories.life.push(todo1);
-// todoCategories.work.push(todo1);
-// todoCategories.education.push(todo1);
-// todoCategories.createNewCat("Sports").push(todo1);
-// todoCategories.createNewCat("Travel").push(todo1);
 
 
 
@@ -207,16 +174,6 @@ NewToDo.retrieveFromLocalStorage("life").forEach(todo => renderToDoToDOM(todo));
 
 // method that saves newly created todos into localStorage
 // method that loads to-dos from the localStorage to display on page
-
-
-
-
-
-
-
-
-
-
 
 
 
