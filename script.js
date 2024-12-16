@@ -1,6 +1,35 @@
-const toDoContainer = document.querySelector('toDoContainer');
 
-class newToDo {
+// func that renders a single todo to the DOM
+function renderToDoToDOM(todo) {
+    const toDoContainer = document.querySelector('.toDoContainer');
+    const todoItem = document.createElement('div');
+    todoItem.classList.add('todoItem');
+    todoItem.insertAdjacentHTML('beforeend', ` 
+        <h2>Category: ${todo.category}</h2> 
+        <h2>Title: ${todo.title}</h2>
+        <p>Description: ${todo.description}</p> 
+        <p>Due Date: ${todo.dueDate}</p> 
+        <p>Priority: ${todo.priority}</p> 
+        <p>Notes: ${todo.notes}</p> 
+        <p>Completed: ${todo.isCompleted}</p> 
+        <button id="remBtn">Remove this todo</button> 
+        `);
+    toDoContainer.appendChild(todoItem);
+
+    const remBtn = todoItem.querySelector("#remBtn");
+    remBtn.addEventListener('click', () => {
+        remBtn.parentElement.remove();
+        TodoCategories.removeToDoFromLocalStorage(todo.category, todo.timestamp);
+    })
+}
+
+
+
+
+
+
+
+class NewToDo {
     constructor(title, description, dueDate, priority, notes) {
         this.title = title;
         this.description = description;
@@ -8,37 +37,29 @@ class newToDo {
         this.priority = priority;
         this.notes = notes;
         this.isCompleted = false;
+        this.timestamp = Date.now();
     }
-
-
 
     // method that saves newly created todos into localStorage
     saveToLocalStorage(category) {
 
+        // deserializing
         let todos = JSON.parse(localStorage.getItem(category)) || [];
+
         todos.push({
             title: this.title,
             description: this.description,
             dueDate: this.dueDate,
             priority: this.priority,
             notes: this.notes,
-            isCompleted: this.isCompleted
+            isCompleted: this.isCompleted,
+            timestamp: this.timestamp,
+            category: category
         });
+
+        // serializing
         localStorage.setItem(category, JSON.stringify(todos));
 
-        // store todo data in js object
-        // let todo = {
-        //     title: this.title,
-        //     description: this.description,
-        //     dueDate: this.dueDate,
-        //     priority: this.priority,
-        //     notes: this.notes,
-        //     isCompleted: this.isCompleted
-        // }
-        // // convert todo into JSON
-        // let jsonTODO = JSON.stringify(todo);
-        // // save that json to localStorage
-        // localStorage.setItem(this.title, jsonTODO);
     }
 
 
@@ -48,9 +69,6 @@ class newToDo {
 
         return JSON.parse(localStorage.getItem(category)) || [];
 
-        // let jsonFromLS = localStorage.getItem(this.title);
-        // let json_to_obj = JSON.parse(jsonFromLS);
-        // console.log(json_to_obj);
     }
 
     setToDoComplete() {
@@ -90,7 +108,7 @@ class newToDo {
 // }
 
 
-class TodoCategories  {
+class TodoCategories {
     constructor() {
         this.categories = {
             life: [],
@@ -106,16 +124,33 @@ class TodoCategories  {
         return this.categories[catName];
     }
 
-    addToDoToCategory (category, todo) {
-        if (!this.categories[category]) {
-            this.createNewCat(category);
-        }
-        this.categories[category].push(todo);
+    // addToDoToCategory(category, todo) {
+    //     if (!this.categories[category]) {
+    //         this.createNewCat(category);
+    //     }
+    //     this.categories[category].push(todo);
+    // }
+
+    static removeToDoFromLocalStorage(category, timestamp) {
+        let jsObj = JSON.parse(localStorage.getItem(category)) || [];
+        // console.log(jsObj);
+    
+        let updatedjsObj = jsObj.filter(todo => todo.timestamp !== timestamp)
+    
+        localStorage.setItem(category, JSON.stringify(updatedjsObj));
+        // console.log(updatedjsObj);
     }
 }
 
 
-let todo1 = new newToDo(
+
+
+// app logic ends here
+// -----------------------------------------------------------------------------------------
+
+
+// creating a new todo
+let todo1 = new NewToDo(
     "example todo",
     "This is an example todo only",
     "24-12-2024",
@@ -124,9 +159,20 @@ let todo1 = new newToDo(
 )
 
 
+// access an existing or create a new category
 let todoCategories = new TodoCategories();
-todoCategories.addToDoToCategory("life", todo1);
-todoCategories.addToDoToCategory("word", todo2);
+todoCategories.createNewCat("leisure");
+// todoCategories.categories["life"]
+// todoCategories.addToDoToCategory("life", todo1);
+
+
+// saving the todo to local storage
+todo1.saveToLocalStorage(Object.keys(todoCategories.categories).at(0));
+// Object.keys(todoCategories.categories).at(0)
+
+
+// Render all to-dos for a category
+NewToDo.retrieveFromLocalStorage("life").forEach(todo => renderToDoToDOM(todo));
 
 // adding a to-do into a certain category
 // todoCategories.life.push(todo1);

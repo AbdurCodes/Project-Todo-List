@@ -6,3 +6,11 @@ body{
         text-align: center;
     }
 }
+
+.toDoContainer{
+    border: 2px solid red;
+}
+
+.todoItem{
+    border: 2px solid yellow;
+}
