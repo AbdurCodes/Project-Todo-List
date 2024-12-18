@@ -2,11 +2,18 @@ class DOMManager {
     static renderToDoToDOM(todo, todoCategory) {
 
         const categoryToDos = document.querySelector('.categoryToDos');
+        if (!categoryToDos) {
+            console.error('Error: .categoryToDos container not found.');
+            return;
+        }
+
+        if (!DOMManager.validateToDo(todo)) {
+            console.error('Invalid todo object:', todo);
+            return;
+        }        
+
         const todoItem = document.createElement('div');
         todoItem.classList.add('todoItem');
-
-        // const category = document.createElement('h2');
-        // category.textContent = `Category: ${todoCategory}`;
 
         const title = document.createElement('h2');
         title.textContent = `Title: ${todo.title}`;
@@ -34,7 +41,6 @@ class DOMManager {
             TodoCategories.deleteTodoFromCategory(todoCategory, todo.todoIdentifier);
         })
 
-        // todoItem.appendChild(category);
         todoItem.appendChild(title);
         todoItem.appendChild(description);
         todoItem.appendChild(dueDate);
@@ -45,7 +51,31 @@ class DOMManager {
 
         categoryToDos.appendChild(todoItem);
     }
+
+    // to ensure todos are valid
+    static validateToDo(todo) {
+        const requiredFields = ['title', 'description', 'dueDate', 'priority', 'notes'];
+        return requiredFields.every(field => todo.hasOwnProperty(field));
+    }
+
+    // to reset the DOM for dynamic updates
+    static clearAllTodos() {
+        const categoryToDos = document.querySelector('.categoryToDos');
+        if (categoryToDos) categoryToDos.innerHTML = '';
+    }
 }
+
+
+// manages localStorage
+class StorageManager {
+    static get(category) {
+        return JSON.parse(localStorage.getItem(category)) || [];
+    }
+    static set(category, todos) {
+        localStorage.setItem(category, JSON.stringify(todos));
+    }
+}
+
 
 
 // manages a single todo
@@ -66,7 +96,7 @@ class NewToDo {
 
         if (targetToDo) {
             targetToDo.isCompleted = !targetToDo.isCompleted;
-            localStorage.setItem(category, JSON.stringify(todos));
+            StorageManager.set(category, todos);
             console.log(`Todo completed successfully.`);
         }
     }
@@ -76,7 +106,7 @@ class NewToDo {
         const targetToDo = todos.find(todo => todo.todoIdentifier === todoIdentifier);
         if (targetToDo) {
             targetToDo.priority = newPriority;
-            localStorage.setItem(category, JSON.stringify(todos));
+            StorageManager.set(category, todos);
             console.log(`Priority updated successfully.`);
         }
     }
@@ -86,7 +116,7 @@ class NewToDo {
         const targetToDo = todos.find(todo => todo.todoIdentifier === todoIdentifier);
         if (targetToDo) {
             targetToDo.dueDate = newDueDate;
-            localStorage.setItem(category, JSON.stringify(todos));
+            StorageManager.set(category, todos);
             console.log(`Due date updated successfully.`);
         }
     }
@@ -97,15 +127,26 @@ class NewToDo {
 class TodoCategories {
     constructor() {
         // singleton pattern ensures NMT one instance of this class is created
+        if (TodoCategories.instance) {
+            return TodoCategories.instance;
+        }
+        this.categories = {
+            life: [],
+            work: [],
+            education: [],
+        };
+        TodoCategories.instance = this;
+    }
+
+    static getInstance() {
         if (!TodoCategories.instance) {
-            this.categories = {
-                life: [],
-                work: [],
-                education: [],
-            }
-            TodoCategories.instance = this;
+            new TodoCategories();
         }
         return TodoCategories.instance;
+    }
+
+    getCategories() {
+        return this.categories;
     }
 
     createNewCat(catName) {
@@ -115,11 +156,14 @@ class TodoCategories {
         return this.categories[catName];
     }
 
+    static updateCategoryName(category) {
+        const categoryName = document.querySelector('.categoryName');
+        if (categoryName) categoryName.textContent = category;
+    }
+
     // get todos from localStorage
     static getToDos(category) {
-        const categoryName = document.querySelector('.categoryName');
-        categoryName.textContent = `${category}`;
-        return JSON.parse(localStorage.getItem(category)) || [];
+        return StorageManager.get(category);
     }
 
 
@@ -127,7 +171,7 @@ class TodoCategories {
     static saveToDoToCategory(category, todo) {
         const todos = TodoCategories.getToDos(category);
         todos.push(todo);
-        localStorage.setItem(category, JSON.stringify(todos));
+        StorageManager.set(category, todos);
         console.log(`Todo saved to "${category}" successfully.`);
     }
 
@@ -135,7 +179,7 @@ class TodoCategories {
     static deleteTodoFromCategory(category, todoIdentifier) {
         const todos = TodoCategories.getToDos(category);
         const updatedToDos = todos.filter(todo => todo.todoIdentifier !== todoIdentifier);
-        localStorage.setItem(category, JSON.stringify(updatedToDos));
+        StorageManager.set(category, updatedToDos);
         console.log(`Todo removed from "${category}" successfully.`);
     }
 }
@@ -159,12 +203,15 @@ let todo2 = new NewToDo(
 )
 
 // access an existing or create a new category
-let todoCategories = new TodoCategories();
+const todoCategories = TodoCategories.getInstance();
+Object.freeze(todoCategories); // Optional: to make the singleton instance immutable
+// let todoCategories = new TodoCategories();
 // TodoCategories.saveToDoToCategory("work", todo1);
 // TodoCategories.getToDos("work").forEach(todo => DOMManager.renderToDoToDOM(todo, "work"));
 
 todoCategories.createNewCat("leisure");
 TodoCategories.saveToDoToCategory("leisure", todo2);
+TodoCategories.updateCategoryName("leisure");
 TodoCategories.getToDos("leisure").forEach(todo => DOMManager.renderToDoToDOM(todo, "leisure"));
 // todoCategories.categories["life"] === todoCategories.categories.life
 
