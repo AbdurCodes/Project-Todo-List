@@ -10,7 +10,7 @@ class DOMManager {
         if (!DOMManager.validateToDo(todo)) {
             console.error('Invalid todo object:', todo);
             return;
-        }        
+        }
 
         const todoItem = document.createElement('div');
         todoItem.classList.add('todoItem');
@@ -64,6 +64,27 @@ class DOMManager {
         if (categoryToDos) categoryToDos.innerHTML = '';
     }
 }
+
+
+
+// modal script
+const dialog = document.querySelector("dialog");
+const addToDoBtn = document.querySelector('#addToDoBtn');
+const closeModal = document.querySelector("dialog button");
+// "Add New Todo" button opens the dialog modally
+addToDoBtn.addEventListener("click", () => {
+    dialog.showModal();
+    document.getElementById('bookName').value = '';
+    document.getElementById('authorName').value = '';
+    document.getElementById('pagesInBook').value = '';
+    document.getElementById('isReadinForm').checked = '';
+});
+// "x" button closes the dialog
+closeModal.addEventListener("click", () => {
+    dialog.close();
+});
+
+
 
 
 // manages localStorage

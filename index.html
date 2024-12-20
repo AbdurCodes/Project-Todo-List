@@ -14,7 +14,49 @@
     <div class="todosContainer">
         <h2 class="categoryName"></h2>
         <div class="categoryToDos"></div>
+        <button id="addToDoBtn" type="button">Add a new todo</button>
     </div>
+
+
+    <dialog>
+        <div class="modalCloseBtn">
+            <button autofocus>x</button>
+        </div>
+        <h2>Add New Todo</h2>
+
+        <form method="dialog" id="myForm">
+            <div class="modal-items">
+                <label for="todoTitle"><span class="required">*</span>Title: </label>
+                <input type="text" id="todoTitle" required>
+            </div>
+            <div class="modal-items">
+                <label for="todoDesc">Description: </label>
+                <textarea id="todoDesc"></textarea>
+            </div>
+            <div class="modal-items">
+                <label for="dueDate"><span class="required">*</span>Due date: </label>
+                <input type="date" id="dueDate" required>
+            </div>
+            <div class="modal-items">
+                <label for="priority">Priority: </label>
+                <input type="number" id="priority">
+            </div>
+            <div class="modal-items">
+                <label for="notes">Notes: </label>
+                <textarea id="notes"></textarea>
+            </div>
+            <div class="haveReadTHisBook">
+                <input type="checkbox" id="todoIsCompleted">
+                <label for="todoIsCompleted">Todo is completed</label>
+            </div>
+            <div class="submitBtn">
+                <input type="submit">
+            </div>
+        </form>
+    </dialog>
+
+
+
 </body>
 
 </html>
