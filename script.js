@@ -1,6 +1,10 @@
 class DOMManager {
     static renderToDoToDOM(todo, todoCategory) {
 
+        // modal script
+        const dialog = document.querySelector("dialog");
+        const closeModal = document.querySelector("dialog button");
+
         const categoryToDos = document.querySelector('.categoryToDos');
         if (!categoryToDos) {
             console.error('Error: .categoryToDos container not found.');
@@ -41,6 +45,65 @@ class DOMManager {
             TodoCategories.deleteTodoFromCategory(todoCategory, todo.todoIdentifier);
         })
 
+        const editToDoBtn = document.createElement('button');
+        editToDoBtn.textContent = `Edit this todo`;
+        editToDoBtn.id = "editToDoBtn";
+        editToDoBtn.addEventListener('click', () => {
+            // "Add a New Todo" button opens the dialog modally
+            dialog.showModal();
+            document.getElementById('todoTitle').value = todo.title;
+            document.getElementById('todoDesc').value = todo.description;
+            document.getElementById('todoDueDate').value = todo.dueDate;
+            document.getElementById('todoPriority').value = todo.priority;
+            document.getElementById('todoNotes').value = todo.notes;
+            document.getElementById('todoIsCompleted').checked = todo.isCompleted;
+            // "x" button closes the dialog
+            closeModal.addEventListener("click", () => {
+                dialog.close();
+            });
+        })
+
+        const addToDoBtn = document.createElement('button');
+        addToDoBtn.textContent = `Add a new todo`;
+        addToDoBtn.id = "addToDoBtn";
+        addToDoBtn.addEventListener('click', () => {
+            // "Add a New Todo" button opens the dialog modally
+            dialog.showModal();
+            document.getElementById('todoTitle').value = '';
+            document.getElementById('todoDesc').value = '';
+            document.getElementById('todoDueDate').value = '';
+            document.getElementById('todoPriority').value = '';
+            document.getElementById('todoNotes').value = '';
+            document.getElementById('todoIsCompleted').checked = '';
+
+            let form = document.getElementById('myForm');
+            form.addEventListener('submit', function () {
+
+                let todoTitle = document.getElementById('todoTitle').value;
+                let todoDesc = document.getElementById('todoDesc').value;
+                let todoDueDate = document.getElementById('todoDueDate').value;
+                let todoPriority = document.getElementById('todoPriority').value;
+                let todoNotes = document.getElementById('todoNotes').value;
+                let todoIsCompleted = document.getElementById('todoIsCompleted').checked;
+
+                let todo1 = new NewToDo(todoTitle, todoDesc, todoDueDate, todoPriority, todoNotes, todoIsCompleted);
+                TodoCategories.saveToDoToCategory("leisure", todo1);
+
+                // let bookN = new BookClass(bookTitle, authorName, pagesInBook, isReadinForm);
+                // myLibrary.push(bookN);
+            
+                // showAllBooksBtn.click();
+            
+                // welcomeMsgSection.style.display = 'flex';
+                // welcomeMsgSection.textContent = "New Book added successfully to the library.";
+               
+            })
+            // "x" button closes the dialog
+            closeModal.addEventListener("click", () => {
+                dialog.close();
+            });
+        })
+
         todoItem.appendChild(title);
         todoItem.appendChild(description);
         todoItem.appendChild(dueDate);
@@ -48,6 +111,8 @@ class DOMManager {
         todoItem.appendChild(notes);
         todoItem.appendChild(isCompleted);
         todoItem.appendChild(removeBtn);
+        todoItem.appendChild(editToDoBtn);
+        todoItem.appendChild(addToDoBtn);
 
         categoryToDos.appendChild(todoItem);
     }
@@ -67,22 +132,24 @@ class DOMManager {
 
 
 
-// modal script
-const dialog = document.querySelector("dialog");
-const addToDoBtn = document.querySelector('#addToDoBtn');
-const closeModal = document.querySelector("dialog button");
-// "Add New Todo" button opens the dialog modally
-addToDoBtn.addEventListener("click", () => {
-    dialog.showModal();
-    document.getElementById('bookName').value = '';
-    document.getElementById('authorName').value = '';
-    document.getElementById('pagesInBook').value = '';
-    document.getElementById('isReadinForm').checked = '';
-});
-// "x" button closes the dialog
-closeModal.addEventListener("click", () => {
-    dialog.close();
-});
+// // modal script
+// const dialog = document.querySelector("dialog");
+// const addToDoBtn = document.querySelector('#addToDoBtn');
+// const closeModal = document.querySelector("dialog button");
+// // "Add New Todo" button opens the dialog modally
+// addToDoBtn.addEventListener("click", () => {
+//     dialog.showModal();
+//     document.getElementById('todoTitle').value = '';
+//     document.getElementById('todoDesc').value = '';
+//     document.getElementById('todoDueDate').value = '';
+//     document.getElementById('todoPriority').value = '';
+//     document.getElementById('todoNotes').value = '';
+//     document.getElementById('todoIsCompleted').checked = '';
+// });
+// // "x" button closes the dialog
+// closeModal.addEventListener("click", () => {
+//     dialog.close();
+// });
 
 
 
@@ -179,7 +246,7 @@ class TodoCategories {
 
     static updateCategoryName(category) {
         const categoryName = document.querySelector('.categoryName');
-        if (categoryName) categoryName.textContent = category;
+        if (categoryName) categoryName.textContent = `Category: ${category}`;
     }
 
     // get todos from localStorage
