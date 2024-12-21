@@ -56,7 +56,7 @@ class DOMManager {
             document.getElementById('todoDueDate').value = todo.dueDate;
             document.getElementById('todoPriority').value = todo.priority;
             document.getElementById('todoNotes').value = todo.notes;
-            document.getElementById('todoIsCompleted').checked = todo.isCompleted;
+            // document.getElementById('todoIsCompleted').checked = todo.isCompleted;
             // "x" button closes the dialog
             closeModal.addEventListener("click", () => {
                 dialog.close();
@@ -74,7 +74,7 @@ class DOMManager {
             document.getElementById('todoDueDate').value = '';
             document.getElementById('todoPriority').value = '';
             document.getElementById('todoNotes').value = '';
-            document.getElementById('todoIsCompleted').checked = '';
+            // document.getElementById('todoIsCompleted').checked = '';
 
             let form = document.getElementById('myForm');
             form.addEventListener('submit', function () {
@@ -84,19 +84,19 @@ class DOMManager {
                 let todoDueDate = document.getElementById('todoDueDate').value;
                 let todoPriority = document.getElementById('todoPriority').value;
                 let todoNotes = document.getElementById('todoNotes').value;
-                let todoIsCompleted = document.getElementById('todoIsCompleted').checked;
+                // let todoIsCompleted = document.getElementById('todoIsCompleted').checked;
 
                 let todo1 = new NewToDo(todoTitle, todoDesc, todoDueDate, todoPriority, todoNotes, todoIsCompleted);
                 TodoCategories.saveToDoToCategory("leisure", todo1);
 
                 // let bookN = new BookClass(bookTitle, authorName, pagesInBook, isReadinForm);
                 // myLibrary.push(bookN);
-            
+
                 // showAllBooksBtn.click();
-            
+
                 // welcomeMsgSection.style.display = 'flex';
                 // welcomeMsgSection.textContent = "New Book added successfully to the library.";
-               
+
             })
             // "x" button closes the dialog
             closeModal.addEventListener("click", () => {
@@ -129,27 +129,6 @@ class DOMManager {
         if (categoryToDos) categoryToDos.innerHTML = '';
     }
 }
-
-
-
-// // modal script
-// const dialog = document.querySelector("dialog");
-// const addToDoBtn = document.querySelector('#addToDoBtn');
-// const closeModal = document.querySelector("dialog button");
-// // "Add New Todo" button opens the dialog modally
-// addToDoBtn.addEventListener("click", () => {
-//     dialog.showModal();
-//     document.getElementById('todoTitle').value = '';
-//     document.getElementById('todoDesc').value = '';
-//     document.getElementById('todoDueDate').value = '';
-//     document.getElementById('todoPriority').value = '';
-//     document.getElementById('todoNotes').value = '';
-//     document.getElementById('todoIsCompleted').checked = '';
-// });
-// // "x" button closes the dialog
-// closeModal.addEventListener("click", () => {
-//     dialog.close();
-// });
 
 
 
@@ -219,9 +198,9 @@ class TodoCategories {
             return TodoCategories.instance;
         }
         this.categories = {
-            life: [],
-            work: [],
-            education: [],
+            Life: [],
+            Work: [],
+            Education: [],
         };
         TodoCategories.instance = this;
     }
@@ -272,16 +251,67 @@ class TodoCategories {
     }
 }
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createNewCatBtn = document.getElementById('createNewCatBtn');
+    const selectElement = document.getElementById('todosCats');
+    const addNewCatLabel = document.querySelector('.addNewCatLabel');
+    const newCatInput = document.getElementById('newCatName');
+    const addNewCatBtn = document.getElementById('addNewCatBtn');
+
+    function createNewCatBtnClickHandler() {
+        addNewCatLabel.style.display = 'block';
+        newCatInput.style.display = 'block';
+        addNewCatBtn.style.display = 'block';
+        createNewCatBtn.style.display = 'none'; // hides the 'create new category' btn after a single click
+    }
+
+    createNewCatBtn.addEventListener('click', createNewCatBtnClickHandler);
+
+    function addNewCatBtnClickHandler() {
+        const newCategory = newCatInput.value.trim();
+        if (newCategory) {
+            const optionEl = document.createElement('option');
+            optionEl.value = newCategory.toLowerCase();
+            optionEl.textContent = newCategory;
+            selectElement.appendChild(optionEl);
+
+            newCatInput.value = "";
+            addNewCatLabel.style.display = 'none';
+            newCatInput.style.display = 'none';
+            addNewCatBtn.style.display = 'none';
+
+            selectElement.value = optionEl.value;
+
+            let categories = JSON.parse(localStorage.getItem(categories)) || [];
+            if (!categories.includes(newCategory)) {
+                categories.push(newCategory);
+                localStorage.setItem(categories, JSON.stringify(categories));
+            }
+            
+            createNewCatBtn.removeEventListener('click', createNewCatBtnClickHandler);
+            addNewCatBtn.removeEventListener('click', addNewCatBtnClickHandler);
+            
+        }
+        else {
+            alert('Please enter a valid category name.');
+        }
+    }
+
+    addNewCatBtn.addEventListener('click', addNewCatBtnClickHandler);
+
+})
+
 // -----------------------------------------------------------------------------------------
 
 // creating a new todo
-let todo1 = new NewToDo(
-    "example todo",
-    "This is an example todo only",
-    "24-12-2024",
-    1,
-    "i will try to complete it in time"
-)
+// let todo1 = new NewToDo(
+//     "example todo",
+//     "This is an example todo only",
+//     "24-12-2024",
+//     1,
+//     "i will try to complete it in time"
+// )
 let todo2 = new NewToDo(
     "todo 2",
     "This is a leisure todo",
@@ -297,10 +327,10 @@ Object.freeze(todoCategories); // Optional: to make the singleton instance immut
 // TodoCategories.saveToDoToCategory("work", todo1);
 // TodoCategories.getToDos("work").forEach(todo => DOMManager.renderToDoToDOM(todo, "work"));
 
-todoCategories.createNewCat("leisure");
-TodoCategories.saveToDoToCategory("leisure", todo2);
-TodoCategories.updateCategoryName("leisure");
-TodoCategories.getToDos("leisure").forEach(todo => DOMManager.renderToDoToDOM(todo, "leisure"));
+// todoCategories.createNewCat("leisure");
+TodoCategories.saveToDoToCategory("Leisure", todo2);
+TodoCategories.updateCategoryName("Leisure");
+TodoCategories.getToDos("Leisure").forEach(todo => DOMManager.renderToDoToDOM(todo, "Leisure"));
 // todoCategories.categories["life"] === todoCategories.categories.life
 
 

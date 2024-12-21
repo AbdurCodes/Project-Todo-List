@@ -26,11 +26,11 @@
         <form method="dialog" id="myForm">
             <div class="modal-items">
                 <label for="todoTitle"><span class="required">*</span>Title: </label>
-                <input type="text" id="todoTitle" required>
+                <input type="text" id="todoTitle" placeholder="todo title" required>
             </div>
             <div class="modal-items">
                 <label for="todoDesc">Description: </label>
-                <textarea id="todoDesc"></textarea>
+                <textarea id="todoDesc" placeholder="describe your todo"></textarea>
             </div>
             <div class="modal-items">
                 <label for="todoDueDate"><span class="required">*</span>Due date: </label>
@@ -38,15 +38,25 @@
             </div>
             <div class="modal-items">
                 <label for="todoPriority">Priority: </label>
-                <input type="number" id="todoPriority">
+                <input type="number" id="todoPriority" placeholder="0 means no priority">
             </div>
             <div class="modal-items">
                 <label for="todoNotes">Notes: </label>
-                <textarea id="todoNotes"></textarea>
+                <textarea id="todoNotes" placeholder="anything extra about the todo"></textarea>
             </div>
-            <div class="haveReadTHisBook">
-                <input type="checkbox" id="todoIsCompleted">
-                <label for="todoIsCompleted">Todo is completed</label>
+            <div class="modal-items selectCategoryOrCreateCategory">
+                <label for="todosCats">Choose category: </label>
+                <select name="todosCats" id="todosCats">
+                    <option value="work">Work</option>
+                    <option value="life">Life</option>
+                    <option value="education">Education</option>
+                </select>
+                <button id="createNewCatBtn">Create new category</button>
+            </div>
+            <div class="modal-items">
+                <label for="newCatName" class="addNewCatLabel" style="display: none;">New category: </label>
+                <input type="text" id="newCatName" placeholder="name of new category" style="display: none; width: 50%; height: 23px;">
+                <button id="addNewCatBtn" style="display: none;">Add</button>
             </div>
             <div class="submitBtn">
                 <input type="submit">
