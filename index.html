@@ -11,17 +11,24 @@
 
 <body>
     <h1>Organize your life for peace of mind</h1>
+    <nav>
+        <ul class="mainMenu">
+            <li><button type="button" class="addNewToDoBtnMain">Add new Todo</button></li>
+        </ul>
+    </nav>
     <div class="todosContainer">
-        <h2 class="categoryName"></h2>
-        <div class="categoryToDos"></div>
+        <!-- <div class="singleCatToDos">
+            <h2 class="categoryName"></h2>
+            <div class="categoryToDos"></div>
+        </div> -->
     </div>
 
 
     <dialog>
         <div class="modalCloseBtn">
-            <button autofocus>x</button>
+            <button type="button" id="dialogCloseBtn" autofocus>x</button>
         </div>
-        <h2>Add New Todo</h2>
+        <h2></h2>
 
         <form method="dialog" id="myForm">
             <div class="modal-items">
@@ -51,15 +58,15 @@
                     <option value="life">Life</option>
                     <option value="education">Education</option>
                 </select>
-                <button id="createNewCatBtn">Create new category</button>
+                <button type="button" id="createNewCatBtn">Create new category</button>
             </div>
             <div class="modal-items">
                 <label for="newCatName" class="addNewCatLabel" style="display: none;">New category: </label>
                 <input type="text" id="newCatName" placeholder="name of new category" style="display: none; width: 50%; height: 23px;">
-                <button id="addNewCatBtn" style="display: none;">Add</button>
+                <button type="button" id="addNewCatBtn" style="display: none;">Add</button>
             </div>
             <div class="submitBtn">
-                <input type="submit">
+                <input id="submitBtn" type="submit">
             </div>
         </form>
     </dialog>

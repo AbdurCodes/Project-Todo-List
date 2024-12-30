@@ -1,3 +1,9 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body{
     background-color: rebeccapurple;
     color: wheat;
@@ -7,16 +13,42 @@ body{
     }
 }
 
+h1{
+    background-color: black;
+    color: wheat;
+    padding: 19px;
+}
+
 .categoryToDos{
     border: 2px solid red;
 }
 
 .todoItem{
     border: 2px solid yellow;
+    margin: 15px;
 }
 
 .required {
     color: red;
+}
+
+.mainMenu{
+    display: flex;
+    list-style-type: none;
+    border-bottom: 2px solid black;
+    justify-content: space-evenly;
+    font-family: Arial, Helvetica, sans-serif;
+    
+    
+    & li button{
+        font-size: 1.3rem;
+        padding: 9px;
+        width: 190px;
+
+        &.addNewToDoBtnMain{
+            width: 300px;
+        }
+    }
 }
 
 
