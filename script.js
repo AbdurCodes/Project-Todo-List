@@ -1,31 +1,158 @@
+const closeModal = document.querySelector("dialog .modalCloseBtn #dialogCloseBtn");
+const selectElement = document.getElementById("todosCats");
+const addNewCatLabel = document.querySelector(".addNewCatLabel");
+const newCatInput = document.getElementById("newCatName");
+const myForm = document.getElementById("myForm");
+const createNewCatBtn = document.getElementById("createNewCatBtn");
+const addNewCatBtn = document.getElementById("addNewCatBtn");
+const addToDoBtn = document.querySelector(".addNewToDoBtnMain");
+const dialog = document.querySelector("dialog");
+const dialogHeading = document.querySelector("dialog h2");
+
+function capitalizeFirstLetter(str) {
+    if (!str) return str;
+    return str.replace(/^\w/, c => c.toUpperCase());
+}
+
 function populateNewCatInMainMenu(catName) {
-
     const mainMenu = document.querySelector(".mainMenu");
-
     const liElement = document.createElement("li");
-
     const button = document.createElement("button");
     button.textContent = catName;
     button.type = "button";
-
     liElement.appendChild(button);
-
     mainMenu.prepend(liElement);
 }
 
+function resetFormFields() {
+    document.getElementById("todoTitle").value = "";
+    document.getElementById("todoDesc").value = "";
+    document.getElementById("todoDueDate").value = "";
+    document.getElementById("todoPriority").value = "";
+    document.getElementById("todoNotes").value = "";
+    // document.getElementById('todosCats').value = '';
+}
+
+function createNewCatBtnClickHandler() {
+    addNewCatLabel.style.display = "block";
+    newCatInput.style.display = "block";
+    addNewCatBtn.style.display = "block";
+    createNewCatBtn.style.display = "none"; // hides the 'create new category' btn after a single click
+    createNewCatBtn.removeEventListener("click", createNewCatBtnClickHandler);
+}
+
+function addNewCatBtnClickHandler() {
+    const newCategory = newCatInput.value.trim();
+    if (newCategory) {
+        const optionEl = document.createElement("option");
+        optionEl.value = newCategory.toLowerCase();
+        optionEl.textContent = newCategory;
+        selectElement.appendChild(optionEl);
+
+        newCatInput.value = "";
+        addNewCatLabel.style.display = "none";
+        newCatInput.style.display = "none";
+        addNewCatBtn.style.display = "none";
+
+        selectElement.value = optionEl.value;
+
+        const categories = Object.keys(todoCategories.categories);
+        if (!categories.includes(newCategory)) {
+            todoCategories.createNewCat(newCategory);
+        }
+
+        addNewCatBtn.removeEventListener("click", addNewCatBtnClickHandler);
+    } else {
+        alert("Please enter a valid category name.");
+    }
+}
+
+function handleFormSubmit(event) {
+    event.preventDefault();
+
+    const todoTitle = document.getElementById("todoTitle").value;
+    const todoDesc = document.getElementById("todoDesc").value;
+    const todoDueDate = document.getElementById("todoDueDate").value;
+    const todoPriority = document.getElementById("todoPriority").value;
+    const todoNotes = document.getElementById("todoNotes").value;
+    const todosCats = document.getElementById("todosCats").value;
+
+    const newTodo = new NewToDo(
+        todoTitle,
+        todoDesc,
+        todoDueDate,
+        todoPriority,
+        todoNotes,
+        todosCats
+    );
+
+    // if (!validateToDo(newTodo)) {
+    //     console.error("Invalid todo object:", newTodo);
+    //     return;
+    // }
+    // else {
+    TodoCategories.saveToDoToCategory(newTodo.category, newTodo);
+
+    if (
+        newTodo.category === "work" ||
+        newTodo.category === "life" ||
+        newTodo.category === "education"
+    ) {
+        console.log("Category already exists.");
+    } else {
+        console.log("New category created!");
+        console.log(todoCategories.categories[newTodo.category]);
+
+        populateNewCatInMainMenu(newTodo.category);
+    }
+
+    dialog.close();
+    console.log("Todo added successfully.");
+    // }
+}
+
+function dialogCloseBtnHandler() {
+    dialog.close();
+}
+
+function createNewCatEventListeners() {
+    createNewCatBtn.addEventListener("click", createNewCatBtnClickHandler);
+    addNewCatBtn.addEventListener("click", addNewCatBtnClickHandler);
+    myForm.addEventListener("submit", handleFormSubmit);
+    closeModal.addEventListener("click", dialogCloseBtnHandler);
+}
+
+// function validateToDo(todo) {
+//     const requiredFields = [
+//         "title",
+//         "description",
+//         "dueDate",
+//         "priority",
+//         "notes",
+//         "category",
+//     ];
+
+//     return requiredFields.every((field) =>
+//         Object.prototype.hasOwnProperty.call(todo, field)
+//     );
+// }
+
+addToDoBtn.addEventListener("click", () => {
+    dialogHeading.textContent = "Add New Todo";
+    resetFormFields();
+    dialog.showModal();
+    createNewCatEventListeners();
+});
+
+
+
 class DOMManager {
     static renderToDoToDOM(todo, todoCategory) {
-        const dialog = document.querySelector("dialog");
-        const closeModal = document.querySelector(
-            "dialog .modalCloseBtn #dialogCloseBtn"
-        );
-        const submitBtn = document.getElementById("submitBtn");
-        const dialogHeading = document.querySelector("dialog h2");
 
-        if (!DOMManager.validateToDo(todo)) {
-            console.error("Invalid todo object:", todo);
-            return;
-        }
+        // if (!DOMManager.validateToDo(todo)) {
+        //     console.error("Invalid todo object:", todo);
+        //     return;
+        // }
 
         const todoItem = document.createElement("div");
         todoItem.classList.add("todoItem");
@@ -57,9 +184,6 @@ class DOMManager {
         const editToDoBtn = document.createElement("button");
         editToDoBtn.textContent = `Edit this todo`;
 
-        const addToDoBtn = document.createElement("button");
-        addToDoBtn.textContent = `Add a new todo`;
-
         todoItem.appendChild(title);
         todoItem.appendChild(description);
         todoItem.appendChild(dueDate);
@@ -70,52 +194,12 @@ class DOMManager {
 
         todoItem.appendChild(removeBtn);
         todoItem.appendChild(editToDoBtn);
-        todoItem.appendChild(addToDoBtn);
+        // todoItem.appendChild(addToDoBtn);
 
         removeBtn.addEventListener("click", () => {
             todoItem.remove();
             TodoCategories.deleteTodoFromCategory(todoCategory, todo.todoIdentifier);
         });
-
-        const createNewCatBtn = document.getElementById("createNewCatBtn");
-        const selectElement = document.getElementById("todosCats");
-        const addNewCatLabel = document.querySelector(".addNewCatLabel");
-        const newCatInput = document.getElementById("newCatName");
-        const addNewCatBtn = document.getElementById("addNewCatBtn");
-
-        function createNewCatBtnClickHandler() {
-            addNewCatLabel.style.display = "block";
-            newCatInput.style.display = "block";
-            addNewCatBtn.style.display = "block";
-            createNewCatBtn.style.display = "none"; // hides the 'create new category' btn after a single click
-            createNewCatBtn.removeEventListener("click", createNewCatBtnClickHandler);
-        }
-
-        function addNewCatBtnClickHandler() {
-            const newCategory = newCatInput.value.trim();
-            if (newCategory) {
-                const optionEl = document.createElement("option");
-                optionEl.value = newCategory.toLowerCase();
-                optionEl.textContent = newCategory;
-                selectElement.appendChild(optionEl);
-
-                newCatInput.value = "";
-                addNewCatLabel.style.display = "none";
-                newCatInput.style.display = "none";
-                addNewCatBtn.style.display = "none";
-
-                selectElement.value = optionEl.value;
-
-                const categories = Object.keys(todoCategories.categories);
-                if (!categories.includes(newCategory)) {
-                    todoCategories.createNewCat(newCategory);
-                }
-
-                addNewCatBtn.removeEventListener("click", addNewCatBtnClickHandler);
-            } else {
-                alert("Please enter a valid category name.");
-            }
-        }
 
         function retrieveToDoData() {
             document.getElementById("todoTitle").value = todo.title;
@@ -126,62 +210,6 @@ class DOMManager {
             document.getElementById("todosCats").value = todo.category;
         }
 
-        function resetFormFields() {
-            document.getElementById("todoTitle").value = "";
-            document.getElementById("todoDesc").value = "";
-            document.getElementById("todoDueDate").value = "";
-            document.getElementById("todoPriority").value = "";
-            document.getElementById("todoNotes").value = "";
-            // document.getElementById('todosCats').value = '';
-        }
-
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            const todoTitle = document.getElementById("todoTitle").value;
-            const todoDesc = document.getElementById("todoDesc").value;
-            const todoDueDate = document.getElementById("todoDueDate").value;
-            const todoPriority = document.getElementById("todoPriority").value;
-            const todoNotes = document.getElementById("todoNotes").value;
-            const todosCats = document.getElementById("todosCats").value;
-
-            const newTodo = new NewToDo(
-                todoTitle,
-                todoDesc,
-                todoDueDate,
-                todoPriority,
-                todoNotes,
-                todosCats
-            );
-            TodoCategories.saveToDoToCategory(newTodo.category, newTodo);
-
-            if (
-                newTodo.category === "work" ||
-                newTodo.category === "life" ||
-                newTodo.category === "education"
-            ) {
-                console.log("Category already exists.");
-            } else {
-                console.log("New category created!");
-                console.log(todoCategories.categories[newTodo.category]);
-
-                populateNewCatInMainMenu(newTodo.category);
-            }
-
-            dialog.close();
-            console.log("Todo added successfully.");
-        }
-
-        function dialogCloseBtnHandler() {
-            dialog.close();
-        }
-
-        function createNewCatEventListeners() {
-            createNewCatBtn.addEventListener("click", createNewCatBtnClickHandler);
-            addNewCatBtn.addEventListener("click", addNewCatBtnClickHandler);
-            submitBtn.addEventListener("click", handleFormSubmit);
-            closeModal.addEventListener("click", dialogCloseBtnHandler);
-        }
-
         editToDoBtn.addEventListener("click", () => {
             dialogHeading.textContent = "Edit Todo";
             dialog.showModal();
@@ -189,30 +217,23 @@ class DOMManager {
             createNewCatEventListeners();
         });
 
-        addToDoBtn.addEventListener("click", () => {
-            dialogHeading.textContent = "Add New Todo";
-            resetFormFields();
-            dialog.showModal();
-            createNewCatEventListeners();
-        });
-
         return todoItem;
     }
 
     // to ensure todos are valid
-    static validateToDo(todo) {
-        const requiredFields = [
-            "title",
-            "description",
-            "dueDate",
-            "priority",
-            "notes",
-            "category",
-        ];
-        return requiredFields.every((field) =>
-            Object.prototype.hasOwnProperty.call(todo, field)
-        );
-    }
+    // static validateToDo(todo) {
+    //     const requiredFields = [
+    //         "title",
+    //         "description",
+    //         "dueDate",
+    //         "priority",
+    //         "notes",
+    //         "category",
+    //     ];
+    //     return requiredFields.every((field) =>
+    //         Object.prototype.hasOwnProperty.call(todo, field)
+    //     );
+    // }
 
     // to reset the DOM for dynamic updates
     static clearAllTodos() {
@@ -311,7 +332,12 @@ class TodoCategories {
     createNewCat(catName) {
         if (!this.categories[catName]) {
             this.categories[catName] = [];
+
+
         }
+
+
+
         localStorage.setItem(catName, JSON.stringify([]));
         return this.categories[catName];
     }
@@ -358,10 +384,7 @@ class TodoCategories {
 }
 
 
-function capitalizeFirstLetter(str) {
-    if (!str) return str;
-    return str.replace(/^\w/, c => c.toUpperCase());
-}
+
 
 
 
@@ -393,12 +416,23 @@ Object.freeze(todoCategories); // Optional: to make the singleton instance immut
 
 // populate the main page with all the todos of the user
 const items = Object.entries(localStorage).map((item) => item);
+
 for (let index = 0; index < items.length; index++) {
 
     const categoryName = items[index][0];
+
+    const categories = Object.keys(todoCategories.categories);
+    if (!categories.includes(categoryName)) {
+        const optionEl = document.createElement("option");
+        optionEl.value = categoryName.toLowerCase();
+        optionEl.textContent = capitalizeFirstLetter(categoryName);
+        selectElement.appendChild(optionEl);
+    }
+
+
     const categoryToDos = JSON.parse(items[index][1]);
     // console.log(categoryToDos.length);
-    
+
     const todosContainer = document.querySelector(".todosContainer");
 
     const singleCatToDos = document.createElement("div");
@@ -413,18 +447,18 @@ for (let index = 0; index < items.length; index++) {
     const singleCatToDos_categoryToDos = document.createElement("div");
     singleCatToDos_categoryToDos.classList.add("categoryToDos");
 
-    if (categoryToDos.length === 0)  { 
+    if (categoryToDos.length === 0) {
         const noToDoMsg = document.createElement('p');
         noToDoMsg.textContent = "No todos here.";
         singleCatToDos_categoryToDos.appendChild(noToDoMsg);
         singleCatToDos.appendChild(singleCatToDos_categoryToDos);
     } else {
         for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
-            
+
             // else {
-                const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
-                singleCatToDos_categoryToDos.appendChild(todoItem);
-                singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+            const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
+            singleCatToDos_categoryToDos.appendChild(todoItem);
+            singleCatToDos.appendChild(singleCatToDos_categoryToDos);
             // }
         }
     }
