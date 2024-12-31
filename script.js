@@ -358,6 +358,12 @@ class TodoCategories {
 }
 
 
+function capitalizeFirstLetter(str) {
+    if (!str) return str;
+    return str.replace(/^\w/, c => c.toUpperCase());
+}
+
+
 
 // -----------------------------------------------------------------------------------------
 
@@ -391,7 +397,8 @@ for (let index = 0; index < items.length; index++) {
 
     const categoryName = items[index][0];
     const categoryToDos = JSON.parse(items[index][1]);
-
+    // console.log(categoryToDos.length);
+    
     const todosContainer = document.querySelector(".todosContainer");
 
     const singleCatToDos = document.createElement("div");
@@ -399,18 +406,27 @@ for (let index = 0; index < items.length; index++) {
 
     const singleCatToDos_categoryName = document.createElement("h2");
     singleCatToDos_categoryName.classList.add("categoryName");
-    singleCatToDos_categoryName.textContent = categoryName;
+    singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category Todos`;
 
     singleCatToDos.appendChild(singleCatToDos_categoryName);
 
     const singleCatToDos_categoryToDos = document.createElement("div");
     singleCatToDos_categoryToDos.classList.add("categoryToDos");
 
-
-    for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
-        const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
-        singleCatToDos_categoryToDos.appendChild(todoItem);
+    if (categoryToDos.length === 0)  { 
+        const noToDoMsg = document.createElement('p');
+        noToDoMsg.textContent = "No todos here.";
+        singleCatToDos_categoryToDos.appendChild(noToDoMsg);
         singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+    } else {
+        for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
+            
+            // else {
+                const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
+                singleCatToDos_categoryToDos.appendChild(todoItem);
+                singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+            // }
+        }
     }
 
     populateNewCatInMainMenu(categoryName);

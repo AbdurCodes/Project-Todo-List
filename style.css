@@ -21,6 +21,7 @@ h1{
 
 .categoryToDos{
     border: 2px solid red;
+    background-color: rgb(55, 34, 75);
 }
 
 .todoItem{
@@ -33,6 +34,7 @@ h1{
 }
 
 .mainMenu{
+    
     display: flex;
     list-style-type: none;
     border-bottom: 2px solid black;
@@ -42,13 +44,29 @@ h1{
     
     & li button{
         font-size: 1.3rem;
+        border-radius: 112px;
         padding: 9px;
         width: 190px;
+        cursor: pointer;
 
+        &:hover {
+            background-color: rgb(245, 188, 82);
+        }
+        
         &.addNewToDoBtnMain{
             width: 300px;
+            &:hover{
+                background-color: greenyellow;
+            }
         }
     }
+}
+
+.categoryName{
+    text-align: center;
+    font-size: 1.6rem;
+    padding: 20px 12px;
+    background-color: rgb(42, 45, 255);
 }
 
 
