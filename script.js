@@ -8,6 +8,9 @@ const addNewCatBtn = document.getElementById("addNewCatBtn");
 const addToDoBtn = document.querySelector(".addNewToDoBtnMain");
 const dialog = document.querySelector("dialog");
 const dialogHeading = document.querySelector("dialog h2");
+const items = Object.entries(localStorage).map((item) => item);
+console.log(items);
+
 
 function capitalizeFirstLetter(str) {
     if (!str) return str;
@@ -20,6 +23,44 @@ function populateNewCatInMainMenu(catName) {
     const button = document.createElement("button");
     button.textContent = catName;
     button.type = "button";
+    button.addEventListener('click', () => {
+        DOMManager.clearAllTodos();
+        for (let index = 0; index < items.length; index++) {
+
+            const categoryName = items[index][0];
+            if (catName === categoryName) {
+                const categoryToDos = JSON.parse(items[index][1]);
+
+                const todosContainer = document.querySelector(".todosContainer");
+
+                const singleCatToDos = document.createElement("div");
+                singleCatToDos.classList.add("singleCatToDos");
+
+                const singleCatToDos_categoryName = document.createElement("h2");
+                singleCatToDos_categoryName.classList.add("categoryName");
+                singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(catName)} Category Todos`;
+
+                singleCatToDos.appendChild(singleCatToDos_categoryName);
+
+                const singleCatToDos_categoryToDos = document.createElement("div");
+                singleCatToDos_categoryToDos.classList.add("categoryToDos");
+
+                if (categoryToDos.length === 0) {
+                    const noToDoMsg = document.createElement('p');
+                    noToDoMsg.textContent = "No todos here.";
+                    singleCatToDos_categoryToDos.appendChild(noToDoMsg);
+                    singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+                } else {
+                    for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
+                        const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], catName);
+                        singleCatToDos_categoryToDos.appendChild(todoItem);
+                        singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+                    }
+                }
+                todosContainer.appendChild(singleCatToDos);
+            }
+        }
+    })
     liElement.appendChild(button);
     mainMenu.prepend(liElement);
 }
@@ -30,7 +71,6 @@ function resetFormFields() {
     document.getElementById("todoDueDate").value = "";
     document.getElementById("todoPriority").value = "";
     document.getElementById("todoNotes").value = "";
-    // document.getElementById('todosCats').value = '';
 }
 
 function createNewCatBtnClickHandler() {
@@ -67,8 +107,12 @@ function addNewCatBtnClickHandler() {
     }
 }
 
+
 function handleFormSubmit(event) {
     event.preventDefault();
+
+    const oldCategory = document.getElementById("oldCategory").value;
+    const oldCategoryIdentifier = document.getElementById("oldCategoryIdentifier").value;
 
     const todoTitle = document.getElementById("todoTitle").value;
     const todoDesc = document.getElementById("todoDesc").value;
@@ -86,33 +130,28 @@ function handleFormSubmit(event) {
         todosCats
     );
 
-    // if (!validateToDo(newTodo)) {
-    //     console.error("Invalid todo object:", newTodo);
-    //     return;
-    // }
-    // else {
     TodoCategories.saveToDoToCategory(newTodo.category, newTodo);
+    TodoCategories.deleteTodoFromCategory(oldCategory, Number(oldCategoryIdentifier));
 
-    if (
-        newTodo.category === "work" ||
-        newTodo.category === "life" ||
-        newTodo.category === "education"
-    ) {
-        console.log("Category already exists.");
-    } else {
-        console.log("New category created!");
-        console.log(todoCategories.categories[newTodo.category]);
-
-        populateNewCatInMainMenu(newTodo.category);
-    }
+    // if (
+    //     newTodo.category === "work" ||
+    //     newTodo.category === "life" ||
+    //     newTodo.category === "education"
+    // ) {
+    //     console.log("Category already exists.");
+    // } else {
+    //     console.log("New category created!");
+    // }
 
     dialog.close();
     console.log("Todo added successfully.");
-    // }
+    location.reload();
+    myForm.removeEventListener("submit", handleFormSubmit);
 }
 
 function dialogCloseBtnHandler() {
     dialog.close();
+    closeModal.removeEventListener("click", dialogCloseBtnHandler);
 }
 
 function createNewCatEventListeners() {
@@ -121,21 +160,6 @@ function createNewCatEventListeners() {
     myForm.addEventListener("submit", handleFormSubmit);
     closeModal.addEventListener("click", dialogCloseBtnHandler);
 }
-
-// function validateToDo(todo) {
-//     const requiredFields = [
-//         "title",
-//         "description",
-//         "dueDate",
-//         "priority",
-//         "notes",
-//         "category",
-//     ];
-
-//     return requiredFields.every((field) =>
-//         Object.prototype.hasOwnProperty.call(todo, field)
-//     );
-// }
 
 addToDoBtn.addEventListener("click", () => {
     dialogHeading.textContent = "Add New Todo";
@@ -149,40 +173,51 @@ addToDoBtn.addEventListener("click", () => {
 class DOMManager {
     static renderToDoToDOM(todo, todoCategory) {
 
-        // if (!DOMManager.validateToDo(todo)) {
-        //     console.error("Invalid todo object:", todo);
-        //     return;
-        // }
-
         const todoItem = document.createElement("div");
         todoItem.classList.add("todoItem");
 
         const title = document.createElement("h2");
         title.textContent = `Title: ${todo.title}`;
+        title.classList.add('todoItemField');
 
         const description = document.createElement("p");
         description.textContent = `Description: ${todo.description}`;
+        description.classList.add('todoItemField');
 
         const dueDate = document.createElement("p");
         dueDate.textContent = `Due Date: ${todo.dueDate}`;
+        dueDate.classList.add('todoItemField');
 
         const priority = document.createElement("p");
         priority.textContent = `Priority: ${todo.priority}`;
+        priority.classList.add('todoItemField');
 
         const notes = document.createElement("p");
         notes.textContent = `Notes: ${todo.notes}`;
+        notes.classList.add('todoItemField');
 
         const cat = document.createElement("p");
         cat.textContent = `Category: ${todo.category}`;
+        cat.classList.add('todoItemField');
+
+        const pEditRemoveBtnsContainer = document.createElement("div");
+        pEditRemoveBtnsContainer.classList.add('pEditRemoveBtnsContainer');
 
         const isCompleted = document.createElement("p");
         isCompleted.textContent = `Completed: ${todo.isCompleted}`;
+        isCompleted.classList.add('todoItemField', 'isCompletedP');
+        isCompleted.style.display = 'inline';
+        pEditRemoveBtnsContainer.appendChild(isCompleted);
 
         const removeBtn = document.createElement("button");
         removeBtn.textContent = `Remove this todo`;
+        removeBtn.classList.add('todoItemField', 'todoItemBtns');
+        pEditRemoveBtnsContainer.appendChild(removeBtn);
 
         const editToDoBtn = document.createElement("button");
         editToDoBtn.textContent = `Edit this todo`;
+        editToDoBtn.classList.add('todoItemField', 'todoItemBtns');
+        pEditRemoveBtnsContainer.appendChild(editToDoBtn);
 
         todoItem.appendChild(title);
         todoItem.appendChild(description);
@@ -190,15 +225,20 @@ class DOMManager {
         todoItem.appendChild(priority);
         todoItem.appendChild(notes);
         todoItem.appendChild(cat);
-        todoItem.appendChild(isCompleted);
-
-        todoItem.appendChild(removeBtn);
-        todoItem.appendChild(editToDoBtn);
-        // todoItem.appendChild(addToDoBtn);
+        todoItem.appendChild(pEditRemoveBtnsContainer);
 
         removeBtn.addEventListener("click", () => {
-            todoItem.remove();
-            TodoCategories.deleteTodoFromCategory(todoCategory, todo.todoIdentifier);
+            const yes = confirm("Sure to delete this todo?");
+            if (yes) {
+                todoItem.remove();
+                TodoCategories.deleteTodoFromCategory(todoCategory, todo.todoIdentifier);
+                location.reload();
+                alert('Todo deleted successfully!');
+            }
+            else {
+                alert('Your todo is not deleted.');
+            }
+
         });
 
         function retrieveToDoData() {
@@ -208,6 +248,9 @@ class DOMManager {
             document.getElementById("todoPriority").value = todo.priority;
             document.getElementById("todoNotes").value = todo.notes;
             document.getElementById("todosCats").value = todo.category;
+
+            document.getElementById("oldCategory").value = todo.category;
+            document.getElementById("oldCategoryIdentifier").value = todo.todoIdentifier;
         }
 
         editToDoBtn.addEventListener("click", () => {
@@ -219,21 +262,6 @@ class DOMManager {
 
         return todoItem;
     }
-
-    // to ensure todos are valid
-    // static validateToDo(todo) {
-    //     const requiredFields = [
-    //         "title",
-    //         "description",
-    //         "dueDate",
-    //         "priority",
-    //         "notes",
-    //         "category",
-    //     ];
-    //     return requiredFields.every((field) =>
-    //         Object.prototype.hasOwnProperty.call(todo, field)
-    //     );
-    // }
 
     // to reset the DOM for dynamic updates
     static clearAllTodos() {
@@ -332,30 +360,10 @@ class TodoCategories {
     createNewCat(catName) {
         if (!this.categories[catName]) {
             this.categories[catName] = [];
-
-
         }
-
-
-
         localStorage.setItem(catName, JSON.stringify([]));
         return this.categories[catName];
     }
-
-    // static updateCategoryName(category) {
-    //     document.addEventListener("DOMContentLoaded", () => {
-    //         const singleCatToDos = document.querySelector(".singleCatToDos");
-    //         const categoryName = document.createElement("h2");
-    //         categoryName.classList.add("categoryName");
-    //         if (categoryName) categoryName.textContent = `Category: ${category}`;
-
-    //         singleCatToDos.prepend(categoryName);
-    //     });
-
-    //     // const categoryName = document.querySelector('.categoryName');
-    //     // if (categoryName) categoryName.textContent = `Category: ${category}`;
-    // }
-
 
     // get todos from localStorage
     static getToDos(category) {
@@ -374,48 +382,30 @@ class TodoCategories {
     static deleteTodoFromCategory(category, todoIdentifier) {
         const todos = TodoCategories.getToDos(category);
         console.log(todos);
+        console.log(todoIdentifier);
+        console.log(typeof todoIdentifier);
         const updatedToDos = todos.filter(
             (todo) => todo.todoIdentifier !== todoIdentifier
         );
-        StorageManager.set(category, updatedToDos);
         console.log(updatedToDos);
+        StorageManager.set(category, updatedToDos);
         console.log(`Todo removed from "${category}" successfully.`);
     }
 }
 
 
-
-
-
-
 // -----------------------------------------------------------------------------------------
 
-// creating a new todo
-// let todo1 = new NewToDo(
-//     "example todo",
-//     "This is an example todo only",
-//     "2024-12-24",
-//     5,
-//     "i will try to complete it in time",
-//     'education'
-// )
 
 // access an existing or create a new category
 const todoCategories = TodoCategories.getInstance();
 Object.freeze(todoCategories); // Optional: to make the singleton instance immutable
 
-// todoCategories.createNewCat("leisure");
-// TodoCategories.saveToDoToCategory(todo1.category, todo1);
-// TodoCategories.updateCategoryName(todo1.category);
-// TodoCategories.getToDos(todo1.category).forEach(todo => DOMManager.renderToDoToDOM(todo, todo1.category));
-// Object.keys(todoCategories.categories).forEach(cat => populateNewCatInMainMenu (cat));
-
 // get all the items of localStorage in one go
 // Object.entries(localStorage);
 
-
 // populate the main page with all the todos of the user
-const items = Object.entries(localStorage).map((item) => item);
+// const items = Object.entries(localStorage).map((item) => item);
 
 for (let index = 0; index < items.length; index++) {
 
@@ -431,7 +421,6 @@ for (let index = 0; index < items.length; index++) {
 
 
     const categoryToDos = JSON.parse(items[index][1]);
-    // console.log(categoryToDos.length);
 
     const todosContainer = document.querySelector(".todosContainer");
 
@@ -454,12 +443,9 @@ for (let index = 0; index < items.length; index++) {
         singleCatToDos.appendChild(singleCatToDos_categoryToDos);
     } else {
         for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
-
-            // else {
             const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
             singleCatToDos_categoryToDos.appendChild(todoItem);
             singleCatToDos.appendChild(singleCatToDos_categoryToDos);
-            // }
         }
     }
 
@@ -467,6 +453,12 @@ for (let index = 0; index < items.length; index++) {
 
     todosContainer.appendChild(singleCatToDos);
 }
+
+
+
+
+
+
 
 // TodoCategories.getToDos(todo1.category).forEach(todo => DOMManager.todoButtonsClicksHandler(todo, todo1.category));
 // DOMManager.todoButtonsClicksHandler(todo, todoCategory);
