@@ -96,7 +96,7 @@ h1{
         width: 190px;
         cursor: pointer;
         border: 7px solid yellowgreen;
-
+        
         &:hover {
             background-color: rgb(245, 188, 82);
             border: 7px solid green;
@@ -104,6 +104,10 @@ h1{
         
         &.addNewToDoBtnMain{
             width: 300px;
+            border-radius: 0px;
+            border: 7px solid rgb(5, 7, 2);
+            background-color: rgb(21, 247, 32);
+            color: rgb(0, 0, 0);
             &:hover{
                 background-color: greenyellow;
             }

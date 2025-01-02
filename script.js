@@ -71,6 +71,9 @@ function resetFormFields() {
     document.getElementById("todoDueDate").value = "";
     document.getElementById("todoPriority").value = "";
     document.getElementById("todoNotes").value = "";
+
+    // document.getElementById("oldCategory").remove();
+    // document.getElementById("oldCategoryIdentifier").remove();
 }
 
 function createNewCatBtnClickHandler() {
@@ -111,9 +114,6 @@ function addNewCatBtnClickHandler() {
 function handleFormSubmit(event) {
     event.preventDefault();
 
-    const oldCategory = document.getElementById("oldCategory").value;
-    const oldCategoryIdentifier = document.getElementById("oldCategoryIdentifier").value;
-
     const todoTitle = document.getElementById("todoTitle").value;
     const todoDesc = document.getElementById("todoDesc").value;
     const todoDueDate = document.getElementById("todoDueDate").value;
@@ -131,17 +131,16 @@ function handleFormSubmit(event) {
     );
 
     TodoCategories.saveToDoToCategory(newTodo.category, newTodo);
-    TodoCategories.deleteTodoFromCategory(oldCategory, Number(oldCategoryIdentifier));
 
-    // if (
-    //     newTodo.category === "work" ||
-    //     newTodo.category === "life" ||
-    //     newTodo.category === "education"
-    // ) {
-    //     console.log("Category already exists.");
-    // } else {
-    //     console.log("New category created!");
-    // }
+    // to handle change of category in case of editing a todo
+    console.log(document.getElementById("oldCategory")); // null in case of adding a new todo
+    if (document.getElementById("oldCategory")) {
+        const oldCategory = document.getElementById("oldCategory").value;
+        const oldCategoryIdentifier = document.getElementById("oldCategoryIdentifier").value;
+        TodoCategories.deleteTodoFromCategory(oldCategory, Number(oldCategoryIdentifier));
+        console.log('todo deleted from old category');
+        
+    }
 
     dialog.close();
     console.log("Todo added successfully.");
@@ -249,8 +248,17 @@ class DOMManager {
             document.getElementById("todoNotes").value = todo.notes;
             document.getElementById("todosCats").value = todo.category;
 
-            document.getElementById("oldCategory").value = todo.category;
-            document.getElementById("oldCategoryIdentifier").value = todo.todoIdentifier;
+            // capture the old category name and its unique identifier for later removal
+            const oldCategory = document.createElement('option');
+            oldCategory.id = 'oldCategory';
+            oldCategory.value = todo.category;
+
+            const oldCategoryIdentifier = document.createElement('option');
+            oldCategoryIdentifier.id = 'oldCategoryIdentifier';
+            oldCategoryIdentifier.value = todo.todoIdentifier;
+
+            selectElement.appendChild(oldCategory);
+            selectElement.appendChild(oldCategoryIdentifier);
         }
 
         editToDoBtn.addEventListener("click", () => {
