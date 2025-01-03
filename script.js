@@ -110,13 +110,23 @@ function addNewCatBtnClickHandler() {
     }
 }
 
+function dateFormatter(params) {
+    // 2025-01-22T09:20 : date string
+    const dateTime = params.split('T');
+    const date = dateTime[0];
+    const time = dateTime[1];
+    const ymd = date.split('-');
+    return `${ymd[2]}-${ymd[1]}-${ymd[0]} at ${time}`
+}
 
 function handleFormSubmit(event) {
     event.preventDefault();
 
     const todoTitle = document.getElementById("todoTitle").value;
     const todoDesc = document.getElementById("todoDesc").value;
-    const todoDueDate = document.getElementById("todoDueDate").value;
+    let todoDueDate = document.getElementById("todoDueDate").value;
+    todoDueDate = dateFormatter(todoDueDate);
+
     const todoPriority = document.getElementById("todoPriority").value;
     const todoNotes = document.getElementById("todoNotes").value;
     const todosCats = document.getElementById("todosCats").value;
@@ -133,7 +143,7 @@ function handleFormSubmit(event) {
     TodoCategories.saveToDoToCategory(newTodo.category, newTodo);
 
     // to handle change of category in case of editing a todo
-    console.log(document.getElementById("oldCategory")); // null in case of adding a new todo
+    // console.log(document.getElementById("oldCategory")); // null in case of adding a new todo
     if (document.getElementById("oldCategory")) {
         const oldCategory = document.getElementById("oldCategory").value;
         const oldCategoryIdentifier = document.getElementById("oldCategoryIdentifier").value;
@@ -144,7 +154,7 @@ function handleFormSubmit(event) {
 
     dialog.close();
     console.log("Todo added successfully.");
-    location.reload();
+    // location.reload();
     myForm.removeEventListener("submit", handleFormSubmit);
 }
 
@@ -427,7 +437,6 @@ for (let index = 0; index < items.length; index++) {
         selectElement.appendChild(optionEl);
     }
 
-
     const categoryToDos = JSON.parse(items[index][1]);
 
     const todosContainer = document.querySelector(".todosContainer");
@@ -468,36 +477,34 @@ for (let index = 0; index < items.length; index++) {
 
 
 
-// TodoCategories.getToDos(todo1.category).forEach(todo => DOMManager.todoButtonsClicksHandler(todo, todo1.category));
-// DOMManager.todoButtonsClicksHandler(todo, todoCategory);
 
-// saving the todo to local storage
-// todo1.saveToLocalStorage(Object.keys(todoCategories.categories).at(0));
-// Object.keys(todoCategories.categories).at(1)
 
-// DOM-related stuff should be separate from the application logic
+// const todoDueDate = document.getElementById("todoDueDate").value;
+// console.log(todoDueDate);
+// import { compareAsc, format } from "../node_modules/date-fns";
 
-// create a new todo
+// format(new Date(2014, 1, 11), "yyyy-MM-dd");
+// //=> '2014-02-11'
 
-// parameters of a todo
-// title, description, dueDate, priority, notes
+// const dates = [
+//   new Date(1995, 6, 2),
+//   new Date(1987, 1, 11),
+//   new Date(1989, 6, 10),
+// ];
+// dates.sort(compareAsc);
+//=> [
+//   Wed Feb 11 1987 00:00:00,
+//   Mon Jul 10 1989 00:00:00,
+//   Sun Jul 02 1995 00:00:00
+// ]
 
-// categories of to-dos
-// given: life, work, education
-// create a new category
-// adding a to-do into a certain category
 
+
+
+
+// TODO
+
+// user should be able to add time along with date for a category
 // setting todos as complete
 // changing todo priority
 // changing due date of a todo
-
-// method that saves newly created todos into localStorage
-// method that loads to-dos from the localStorage to display on page
-
-// basic app workflow
-
-// give user option to enter their todo
-// save that todo into localStorage
-// upon user request, load that todo from local storage
-// on homepage, show user all their todos, along with option to 'create new todo'
-// also user should be able to include a certain todo into a certain category
