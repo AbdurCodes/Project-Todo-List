@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Get stuff done</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <!-- <script type="module" src="script.js" defer></script> -->
+     <!-- <script src="dist/main.js"></script> -->
+<script defer src="main.js"></script><link href="style.css" rel="stylesheet"></head>
+
+<body>
+    <h1>Organize your life for peace of mind</h1>
+    <nav>
+        <ul class="mainMenu">
+            <li><button type="button" class="addNewToDoBtnMain">Add new Todo</button></li>
+        </ul>
+    </nav>
+    <div class="todosContainer">
+        <!-- <div class="singleCatToDos">
+            <h2 class="categoryName"></h2>
+            <div class="categoryToDos"></div>
+        </div> -->
+    </div>
+
+
+    <dialog>
+        <div class="modalCloseBtn">
+            <button type="button" id="dialogCloseBtn" autofocus>x</button>
+        </div>
+        <h2></h2>
+
+        <form method="dialog" id="myForm">
+            <div class="modal-items">
+                <label for="todoTitle"><span class="required">*</span>Title: </label>
+                <input type="text" id="todoTitle" placeholder="todo title" required>
+            </div>
+            <div class="modal-items">
+                <label for="todoDesc">Description: </label>
+                <textarea id="todoDesc" placeholder="describe your todo"></textarea>
+            </div>
+            <div class="modal-items">
+                <label for="todoDueDate"><span class="required">*</span>Due date: </label>
+                <input type="datetime-local" id="todoDueDate" required>
+            </div>
+            <div class="modal-items">
+                <label for="todoPriority">Priority: </label>
+                <input type="number" id="todoPriority" placeholder="0 means no priority">
+            </div>
+            <div class="modal-items">
+                <label for="todoNotes">Notes: </label>
+                <textarea id="todoNotes" placeholder="anything extra about the todo"></textarea>
+            </div>
+            <div class="modal-items selectCategoryOrCreateCategory">
+                <label for="todosCats">Choose category: </label>
+                <select name="todosCats" id="todosCats">
+                    <option value="work">Work</option>
+                    <option value="life">Life</option>
+                    <option value="education">Education</option>
+                    <!-- <option id="oldCategory"></option>
+                    <option id="oldCategoryIdentifier"></option> -->
+                </select>
+                <button type="button" id="createNewCatBtn">Create new category</button>
+            </div>
+            <div class="modal-items">
+                <label for="newCatName" class="addNewCatLabel" style="display: none;">New category: </label>
+                <input type="text" id="newCatName" placeholder="name of new category" style="display: none; width: 50%; height: 23px;">
+                <button type="button" id="addNewCatBtn" style="display: none;">Add</button>
+            </div>
+            <div class="submitBtn">
+                <input id="submitBtn" type="submit">
+            </div>
+        </form>
+    </dialog>
+
+
+
+</body>
+
+</html>

@@ -1,3 +1,30 @@
+import './style.css';
+
+import { compareAsc, format } from "date-fns";
+
+format(new Date(2014, 1, 11), "yyyy-MM-dd");
+//=> '2014-02-11'
+
+const dates = [
+  new Date(1995, 6, 2),
+  new Date(1987, 1, 11),
+  new Date(1989, 6, 10),
+];
+dates.sort(compareAsc);
+// => [
+//   Wed Feb 11 1987 00:00:00,
+//   Mon Jul 10 1989 00:00:00,
+//   Sun Jul 02 1995 00:00:00
+// ]
+
+import { formatDistance, subDays } from "date-fns";
+
+formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true });
+
+
+
+
+
 const closeModal = document.querySelector("dialog .modalCloseBtn #dialogCloseBtn");
 const selectElement = document.getElementById("todosCats");
 const addNewCatLabel = document.querySelector(".addNewCatLabel");
@@ -9,8 +36,7 @@ const addToDoBtn = document.querySelector(".addNewToDoBtnMain");
 const dialog = document.querySelector("dialog");
 const dialogHeading = document.querySelector("dialog h2");
 const items = Object.entries(localStorage).map((item) => item);
-console.log(items);
-
+// console.log(items);
 
 function capitalizeFirstLetter(str) {
     if (!str) return str;
@@ -71,7 +97,6 @@ function resetFormFields() {
     document.getElementById("todoDueDate").value = "";
     document.getElementById("todoPriority").value = "";
     document.getElementById("todoNotes").value = "";
-
     // document.getElementById("oldCategory").remove();
     // document.getElementById("oldCategoryIdentifier").remove();
 }
@@ -110,9 +135,9 @@ function addNewCatBtnClickHandler() {
     }
 }
 
-function dateFormatter(params) {
+function dateFormatter(givenDate) {
     // 2025-01-22T09:20 : date string
-    const dateTime = params.split('T');
+    const dateTime = givenDate.split('T');
     const date = dateTime[0];
     const time = dateTime[1];
     const ymd = date.split('-');
@@ -124,9 +149,7 @@ function handleFormSubmit(event) {
 
     const todoTitle = document.getElementById("todoTitle").value;
     const todoDesc = document.getElementById("todoDesc").value;
-    let todoDueDate = document.getElementById("todoDueDate").value;
-    todoDueDate = dateFormatter(todoDueDate);
-
+    const todoDueDate = document.getElementById("todoDueDate").value;
     const todoPriority = document.getElementById("todoPriority").value;
     const todoNotes = document.getElementById("todoNotes").value;
     const todosCats = document.getElementById("todosCats").value;
@@ -149,12 +172,11 @@ function handleFormSubmit(event) {
         const oldCategoryIdentifier = document.getElementById("oldCategoryIdentifier").value;
         TodoCategories.deleteTodoFromCategory(oldCategory, Number(oldCategoryIdentifier));
         console.log('todo deleted from old category');
-        
     }
 
     dialog.close();
     console.log("Todo added successfully.");
-    // location.reload();
+    location.reload();
     myForm.removeEventListener("submit", handleFormSubmit);
 }
 
@@ -194,7 +216,8 @@ class DOMManager {
         description.classList.add('todoItemField');
 
         const dueDate = document.createElement("p");
-        dueDate.textContent = `Due Date: ${todo.dueDate}`;
+        const formattedDueDate = dateFormatter(todo.dueDate);
+        dueDate.textContent = `Due Date: ${formattedDueDate}`;
         dueDate.classList.add('todoItemField');
 
         const priority = document.createElement("p");
@@ -277,7 +300,6 @@ class DOMManager {
             retrieveToDoData();
             createNewCatEventListeners();
         });
-
         return todoItem;
     }
 
@@ -288,6 +310,7 @@ class DOMManager {
     }
 }
 
+
 // manages localStorage
 class StorageManager {
     static get(category) {
@@ -297,6 +320,7 @@ class StorageManager {
         localStorage.setItem(category, JSON.stringify(todos));
     }
 }
+
 
 // manages a single todo
 class NewToDo {
@@ -479,24 +503,8 @@ for (let index = 0; index < items.length; index++) {
 
 
 
-// const todoDueDate = document.getElementById("todoDueDate").value;
-// console.log(todoDueDate);
-// import { compareAsc, format } from "../node_modules/date-fns";
 
-// format(new Date(2014, 1, 11), "yyyy-MM-dd");
-// //=> '2014-02-11'
 
-// const dates = [
-//   new Date(1995, 6, 2),
-//   new Date(1987, 1, 11),
-//   new Date(1989, 6, 10),
-// ];
-// dates.sort(compareAsc);
-//=> [
-//   Wed Feb 11 1987 00:00:00,
-//   Mon Jul 10 1989 00:00:00,
-//   Sun Jul 02 1995 00:00:00
-// ]
 
 
 
@@ -508,3 +516,12 @@ for (let index = 0; index < items.length; index++) {
 // setting todos as complete
 // changing todo priority
 // changing due date of a todo
+
+
+
+
+// Future todos
+// a menu that contains ::::
+//      1. completed todos (green)
+//      2. missed todos (red)
+//      3. homepage contains current todos (blue)

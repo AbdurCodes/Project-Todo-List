@@ -1,0 +1,230 @@
+/*!*****************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/style.css ***!
+  \*****************************************************************/
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background-color: rebeccapurple;
+    color: wheat;
+
+    & > h1 {
+        text-align: center;
+    }
+}
+
+#oldCategory, #oldCategoryIdentifier{
+    display: none;
+}
+
+h1{
+    background-color: black;
+    color: wheat;
+    padding: 19px;
+}
+
+.categoryToDos{
+    border: 2px solid red;
+    background-color: rgb(55, 34, 75);
+    /* text-align: center; */
+    /* display: flex; 
+    justify-content: center; */
+}
+.categoryName{
+    border: 2px solid red;
+    /* background-color: rgb(55, 34, 75); */
+}
+
+.todoItemField{
+    padding: 8px;
+}
+
+.isCompletedP{
+    margin-right: auto;
+}
+
+.pEditRemoveBtnsContainer{
+    /* border: 2px solid red; */
+    display: flex;
+}
+
+.todoItemBtns{
+    margin: 0px 17px;
+}
+
+.todoItemBtns:nth-of-type(1){
+    background-color: rgb(218, 79, 79);
+    color: white;
+    &:hover {
+        background-color: rgb(196, 25, 25);
+        cursor: pointer;
+    }
+}
+
+.todoItemBtns:nth-of-type(2){
+    background-color: rgb(142, 248, 138);
+    color: black;
+    &:hover {
+        background-color: rgb(56, 224, 50);
+        cursor: pointer;
+    }
+}
+
+.todoItem{
+    border: 1px solid rgb(79, 206, 211);
+    margin: 2%;
+    /* width: 60%; */
+}
+
+.required {
+    color: red;
+}
+
+.mainMenu{
+    
+    display: flex;
+    list-style-type: none;
+    border-bottom: 2px solid black;
+    justify-content: space-evenly;
+    font-family: Arial, Helvetica, sans-serif;
+    
+    
+    & li button{
+        font-size: 1.3rem;
+        border-radius: 112px;
+        padding: 9px;
+        width: 190px;
+        cursor: pointer;
+        border: 7px solid yellowgreen;
+        
+        &:hover {
+            background-color: rgb(245, 188, 82);
+            border: 7px solid green;
+        }
+        
+        &.addNewToDoBtnMain{
+            width: 300px;
+            border-radius: 0px;
+            border: 7px solid rgb(5, 7, 2);
+            background-color: rgb(21, 247, 32);
+            color: rgb(0, 0, 0);
+            &:hover{
+                background-color: greenyellow;
+            }
+        }
+    }
+}
+
+.categoryName{
+    text-align: center;
+    font-size: 1.6rem;
+    padding: 20px 12px;
+    background-color: rgb(42, 45, 255);
+}
+
+
+/* modal styling begins */
+dialog {
+    margin: auto;
+    width: 500px;
+    height: 600px;
+    border: 5px solid rgb(61, 7, 255);
+    border-top-left-radius: 140px;
+    border-bottom-right-radius: 140px;
+    border-top-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    padding: 45px;
+    background-color: aquamarine;
+
+    & h2 {
+        margin: 28px 0px;
+        display: flex;
+        justify-content: center;
+        font-size: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+}
+
+.modal-items {
+    margin: 18px 0px;
+    display: flex;
+    align-items: center;
+
+    & input {
+        width: 60%;
+        height: 30px;
+        font-size: 1.2rem;
+    }
+    
+    & textarea {
+        width: 60%;
+        height: 60px;
+        font-size: 1.2rem;
+    }
+
+    & label {
+        font-size: 1.1em;
+        font-weight: 800;
+        margin-right: 3px;
+    }
+}
+
+.submitBtn {
+    display: flex;
+    justify-content: center;
+    margin: 50px 0 0 0;
+
+    & input {
+        width: 130px;
+        height: 30px;
+        font-size: 1.2rem;
+        border-radius: 12px;
+
+        &:hover {
+            background-color: rgb(47, 255, 64);
+            cursor: pointer;
+        }
+    }
+}
+
+.haveReadTHisBook {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    & input {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.modalCloseBtn {
+    display: flex;
+    justify-content: flex-end;
+
+    & button {
+        width: 30px;
+        height: 20px;
+        border-radius: 5px;
+
+        &:hover {
+            background-color: red;
+            color: white;
+        }
+    }
+}
+
+form div label:not(label[for="isRead"]) {
+    width: 130px;
+    display: inline-block;
+    text-align: right;
+}
+
+/* modal styling ends */
