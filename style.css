@@ -52,10 +52,20 @@ h1{
 }
 
 .todoItemBtns{
-    margin: 0px 17px;
+    margin: 0px 5px;
+    border-radius: 6px;
 }
 
 .todoItemBtns:nth-of-type(1){
+    background-color: rgb(142, 248, 138);
+    color: black;
+    &:hover {
+        background-color: rgb(56, 224, 50);
+        cursor: pointer;
+    }
+}
+
+.todoItemBtns:nth-of-type(2){
     background-color: rgb(218, 79, 79);
     color: white;
     &:hover {
@@ -64,11 +74,11 @@ h1{
     }
 }
 
-.todoItemBtns:nth-of-type(2){
-    background-color: rgb(142, 248, 138);
-    color: black;
+.todoItemBtns:nth-of-type(3){
+    background-color: rgb(57, 60, 255);
+    color: white;
     &:hover {
-        background-color: rgb(56, 224, 50);
+        background-color: rgb(14, 17, 219);
         cursor: pointer;
     }
 }
