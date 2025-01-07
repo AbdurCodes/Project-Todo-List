@@ -1,29 +1,10 @@
+// filter various todos based on various params
+// current todos filter based on Completed: false
+// completed todos filter based on Completed: true
+// missed todos filter based on : relativeTime contains 'ago'
+
 import './style.css';
-
-import { compareAsc, format } from "date-fns";
-
-format(new Date(2014, 1, 11), "yyyy-MM-dd");
-//=> '2014-02-11'
-
-const dates = [
-  new Date(1995, 6, 2),
-  new Date(1987, 1, 11),
-  new Date(1989, 6, 10),
-];
-dates.sort(compareAsc);
-// => [
-//   Wed Feb 11 1987 00:00:00,
-//   Mon Jul 10 1989 00:00:00,
-//   Sun Jul 02 1995 00:00:00
-// ]
-
-import { formatDistance, subDays } from "date-fns";
-
-formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true });
-
-
-
-
+import { format, parseISO, formatDistanceToNow } from "date-fns";
 
 const closeModal = document.querySelector("dialog .modalCloseBtn #dialogCloseBtn");
 const selectElement = document.getElementById("todosCats");
@@ -32,11 +13,61 @@ const newCatInput = document.getElementById("newCatName");
 const myForm = document.getElementById("myForm");
 const createNewCatBtn = document.getElementById("createNewCatBtn");
 const addNewCatBtn = document.getElementById("addNewCatBtn");
+const completedToDosCatBtn = document.getElementById("completedToDosCatBtn");
+const missedToDosCatBtn = document.getElementById("missedToDosCatBtn");
 const addToDoBtn = document.querySelector(".addNewToDoBtnMain");
 const dialog = document.querySelector("dialog");
 const dialogHeading = document.querySelector("dialog h2");
 const items = Object.entries(localStorage).map((item) => item);
 // console.log(items);
+
+
+
+
+completedToDosCatBtn.addEventListener('click', () => {
+    DOMManager.clearAllTodos();
+    const categoryToDos = TodoCategories.getToDos('completedToDosCat');
+
+    const todosContainer = document.querySelector(".todosContainer");
+
+    const singleCatToDos = document.createElement("div");
+    singleCatToDos.classList.add("singleCatToDos");
+
+    const singleCatToDos_categoryName = document.createElement("h2");
+    singleCatToDos_categoryName.classList.add("categoryName");
+    singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter('completedToDosCat')} Category Todos`;
+
+    singleCatToDos.appendChild(singleCatToDos_categoryName);
+
+    const singleCatToDos_categoryToDos = document.createElement("div");
+    singleCatToDos_categoryToDos.classList.add("categoryToDos");
+
+    if (categoryToDos.length === 0) {
+        const noToDoMsg = document.createElement('p');
+        noToDoMsg.textContent = "No todos here.";
+        singleCatToDos_categoryToDos.appendChild(noToDoMsg);
+        singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+    }
+    else {
+        for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
+            const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], 'completedToDosCat');
+            singleCatToDos_categoryToDos.appendChild(todoItem);
+            singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+        }
+    }
+
+    todosContainer.appendChild(singleCatToDos);
+})
+
+
+
+missedToDosCatBtn.addEventListener('click', () => {
+    TodoCategories.getToDos('missedToDosCat');
+
+})
+
+
+
 
 function capitalizeFirstLetter(str) {
     if (!str) return str;
@@ -135,18 +166,10 @@ function addNewCatBtnClickHandler() {
     }
 }
 
-function dateFormatter(givenDate) {
-    // 2025-01-22T09:20 : date string
-    const dateTime = givenDate.split('T');
-    const date = dateTime[0];
-    const time = dateTime[1];
-    const ymd = date.split('-');
-    return `${ymd[2]}-${ymd[1]}-${ymd[0]} at ${time}`
-}
+
 
 function handleFormSubmit(event) {
     event.preventDefault();
-
     const todoTitle = document.getElementById("todoTitle").value;
     const todoDesc = document.getElementById("todoDesc").value;
     const todoDueDate = document.getElementById("todoDueDate").value;
@@ -176,7 +199,7 @@ function handleFormSubmit(event) {
 
     dialog.close();
     console.log("Todo added successfully.");
-    location.reload();
+    // location.reload();
     myForm.removeEventListener("submit", handleFormSubmit);
 }
 
@@ -216,8 +239,11 @@ class DOMManager {
         description.classList.add('todoItemField');
 
         const dueDate = document.createElement("p");
-        const formattedDueDate = dateFormatter(todo.dueDate);
-        dueDate.textContent = `Due Date: ${formattedDueDate}`;
+        // const formattedDueDate = dateFormatter(todo.dueDate);
+        const parsedDate = parseISO(todo.dueDate);
+        const formattedDueDate = format(parsedDate, "EEEE, MMMM d, yyyy 'at' h:mm a");
+        const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
+        dueDate.textContent = `Due Date: ${formattedDueDate} (due ${relativeTime})`;
         dueDate.classList.add('todoItemField');
 
         const priority = document.createElement("p");
@@ -241,6 +267,11 @@ class DOMManager {
         isCompleted.style.display = 'inline';
         pEditRemoveBtnsContainer.appendChild(isCompleted);
 
+        const markCompletedBtn = document.createElement("button");
+        markCompletedBtn.textContent = `Mark as completed`;
+        markCompletedBtn.classList.add('todoItemField', 'todoItemBtns');
+        pEditRemoveBtnsContainer.appendChild(markCompletedBtn);
+
         const removeBtn = document.createElement("button");
         removeBtn.textContent = `Remove this todo`;
         removeBtn.classList.add('todoItemField', 'todoItemBtns');
@@ -258,6 +289,19 @@ class DOMManager {
         todoItem.appendChild(notes);
         todoItem.appendChild(cat);
         todoItem.appendChild(pEditRemoveBtnsContainer);
+
+        markCompletedBtn.addEventListener('click', () => {
+            const yes = confirm("Are you sure this todo is completed?");
+            if (yes) {
+                NewToDo.toggleCompletion(todo.category, todo.todoIdentifier);
+                // todo item background change to green
+                location.reload();
+                alert('Todo completed and added to "completed todos".');
+            }
+            else {
+                alert('Your todo is yet to be completed.');
+            }
+        });
 
         removeBtn.addEventListener("click", () => {
             const yes = confirm("Sure to delete this todo?");
@@ -342,7 +386,9 @@ class NewToDo {
         );
 
         if (targetToDo) {
+            console.log(targetToDo.isCompleted);
             targetToDo.isCompleted = !targetToDo.isCompleted;
+            console.log(targetToDo.isCompleted);
             StorageManager.set(category, todos);
             console.log(`Todo completed successfully.`);
         }
@@ -415,6 +461,7 @@ class TodoCategories {
     // save todo into category and then into localStorage
     static saveToDoToCategory(category, todo) {
         const todos = TodoCategories.getToDos(category);
+        console.log(todos);
         todos.push(todo);
         StorageManager.set(category, todos);
         console.log(`Todo saved to "${category}" successfully.`);
@@ -443,6 +490,16 @@ class TodoCategories {
 const todoCategories = TodoCategories.getInstance();
 Object.freeze(todoCategories); // Optional: to make the singleton instance immutable
 
+
+// const categories = Object.keys(todoCategories.categories);
+// if (!categories.includes('completedToDosCat')) {
+//     todoCategories.createNewCat('completedToDosCat');
+// }
+// if (!categories.includes('missedToDosCat')) {
+//     todoCategories.createNewCat('missedToDosCat');
+// }
+
+
 // get all the items of localStorage in one go
 // Object.entries(localStorage);
 
@@ -453,70 +510,58 @@ for (let index = 0; index < items.length; index++) {
 
     const categoryName = items[index][0];
 
-    const categories = Object.keys(todoCategories.categories);
-    if (!categories.includes(categoryName)) {
-        const optionEl = document.createElement("option");
-        optionEl.value = categoryName.toLowerCase();
-        optionEl.textContent = capitalizeFirstLetter(categoryName);
-        selectElement.appendChild(optionEl);
+    if (categoryName === "completedToDosCat" || categoryName === "missedToDosCat") {
+        console.log("cats not meant to be populated in main menu and dom");
     }
+    else {
+        const categories = Object.keys(todoCategories.categories);
+        if (!categories.includes(categoryName)) {
+            const optionEl = document.createElement("option");
+            optionEl.value = categoryName.toLowerCase();
+            optionEl.textContent = capitalizeFirstLetter(categoryName);
+            selectElement.appendChild(optionEl);
+        }
 
-    const categoryToDos = JSON.parse(items[index][1]);
+        const categoryToDos = JSON.parse(items[index][1]);
 
-    const todosContainer = document.querySelector(".todosContainer");
+        const todosContainer = document.querySelector(".todosContainer");
 
-    const singleCatToDos = document.createElement("div");
-    singleCatToDos.classList.add("singleCatToDos");
+        const singleCatToDos = document.createElement("div");
+        singleCatToDos.classList.add("singleCatToDos");
 
-    const singleCatToDos_categoryName = document.createElement("h2");
-    singleCatToDos_categoryName.classList.add("categoryName");
-    singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category Todos`;
+        const singleCatToDos_categoryName = document.createElement("h2");
+        singleCatToDos_categoryName.classList.add("categoryName");
+        singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category Todos`;
 
-    singleCatToDos.appendChild(singleCatToDos_categoryName);
+        singleCatToDos.appendChild(singleCatToDos_categoryName);
 
-    const singleCatToDos_categoryToDos = document.createElement("div");
-    singleCatToDos_categoryToDos.classList.add("categoryToDos");
+        const singleCatToDos_categoryToDos = document.createElement("div");
+        singleCatToDos_categoryToDos.classList.add("categoryToDos");
 
-    if (categoryToDos.length === 0) {
-        const noToDoMsg = document.createElement('p');
-        noToDoMsg.textContent = "No todos here.";
-        singleCatToDos_categoryToDos.appendChild(noToDoMsg);
-        singleCatToDos.appendChild(singleCatToDos_categoryToDos);
-    } else {
-        for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
-            const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
-            singleCatToDos_categoryToDos.appendChild(todoItem);
+        if (categoryToDos.length === 0) {
+            const noToDoMsg = document.createElement('p');
+            noToDoMsg.textContent = "No todos here.";
+            singleCatToDos_categoryToDos.appendChild(noToDoMsg);
             singleCatToDos.appendChild(singleCatToDos_categoryToDos);
         }
+        else {
+            for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
+                const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
+                singleCatToDos_categoryToDos.appendChild(todoItem);
+                singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+            }
+        }
+        populateNewCatInMainMenu(categoryName);
+        todosContainer.appendChild(singleCatToDos);
     }
 
-    populateNewCatInMainMenu(categoryName);
 
-    todosContainer.appendChild(singleCatToDos);
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO
-
-// user should be able to add time along with date for a category
-// setting todos as complete
 // changing todo priority
 // changing due date of a todo
-
 
 
 
