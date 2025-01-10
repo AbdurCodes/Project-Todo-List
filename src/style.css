@@ -44,15 +44,16 @@ h1 {
     &:hover {
         background-color: rgb(64, 167, 70);
         color: black;
-    } 
+    }
 }
+
 .missedCompletedTodosBtns:nth-of-type(2) {
     background-color: rgb(139, 43, 43);
 
     &:hover {
         background-color: rgb(189, 56, 56);
         color: black;
-    } 
+    }
 }
 
 .categoryToDos {
@@ -162,6 +163,15 @@ h1 {
     font-size: 1.6rem;
     padding: 20px 12px;
     background-color: rgb(42, 45, 255);
+}
+
+
+.delCatBtn {
+    padding: 9px;
+    width: 190px;
+    margin: 0px 18px;
+    background-color: crimson;
+    color: white;
 }
 
 

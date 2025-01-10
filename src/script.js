@@ -10,11 +10,14 @@ const myForm = document.getElementById("myForm");
 const createNewCatBtn = document.getElementById("createNewCatBtn");
 const addNewCatBtn = document.getElementById("addNewCatBtn");
 const completedToDosCatBtn = document.getElementById("completedToDosCatBtn");
+// const delCatBtn = document.querySelector('.delCatBtn');
 const missedToDosCatBtn = document.getElementById("missedToDosCatBtn");
 const addToDoBtn = document.querySelector(".addNewToDoBtnMain");
 const dialog = document.querySelector("dialog");
 const dialogHeading = document.querySelector("dialog h2");
 const items = Object.entries(localStorage).map((item) => item);
+
+
 
 
 function removeMarkCompAndEditTodoBtns() {
@@ -41,6 +44,22 @@ completedToDosCatBtn.addEventListener('click', () => {
         const singleCatToDos_categoryName = document.createElement("h2");
         singleCatToDos_categoryName.classList.add("categoryName");
         singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category - Completed Todos`;
+
+        const delCatBtn = document.createElement('button');
+        delCatBtn.textContent = 'Delete this category';
+        delCatBtn.setAttribute('type', 'button');
+        delCatBtn.classList.add('delCatBtn');
+        delCatBtn.addEventListener('click', () => {
+            const deleteCat = confirm("Sure to delete this category?");
+            if (deleteCat) {
+                StorageManager.removeCat(categoryName);
+                location.reload();
+            } else {
+                alert('Your category is not deleted.');
+            }
+        })
+        singleCatToDos_categoryName.appendChild(delCatBtn);
+
         singleCatToDos.appendChild(singleCatToDos_categoryName);
 
         const singleCatToDos_categoryToDos = document.createElement("div");
@@ -95,6 +114,21 @@ missedToDosCatBtn.addEventListener('click', () => {
         const singleCatToDos_categoryName = document.createElement("h2");
         singleCatToDos_categoryName.classList.add("categoryName");
         singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category - Missed Todos`;
+
+        const delCatBtn = document.createElement('button');
+        delCatBtn.textContent = 'Delete this category';
+        delCatBtn.setAttribute('type', 'button');
+        delCatBtn.classList.add('delCatBtn');
+        delCatBtn.addEventListener('click', () => {
+            const deleteCat = confirm("Sure to delete this category?");
+            if (deleteCat) {
+                StorageManager.removeCat(categoryName);
+                location.reload();
+            } else {
+                alert('Your category is not deleted.');
+            }
+        })
+        singleCatToDos_categoryName.appendChild(delCatBtn);
 
         singleCatToDos.appendChild(singleCatToDos_categoryName);
 
@@ -162,6 +196,21 @@ function populateNewCatInMainMenu(catName) {
                 const singleCatToDos_categoryName = document.createElement("h2");
                 singleCatToDos_categoryName.classList.add("categoryName");
                 singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(catName)} Category - Current Todos`;
+
+                const delCatBtn = document.createElement('button');
+                delCatBtn.textContent = 'Delete this category';
+                delCatBtn.setAttribute('type', 'button');
+                delCatBtn.classList.add('delCatBtn');
+                delCatBtn.addEventListener('click', () => {
+                    const deleteCat = confirm("Sure to delete this category?");
+                    if (deleteCat) {
+                        StorageManager.removeCat(categoryName);
+                        location.reload();
+                    } else {
+                        alert('Your category is not deleted.');
+                    }
+                })
+                singleCatToDos_categoryName.appendChild(delCatBtn);
 
                 singleCatToDos.appendChild(singleCatToDos_categoryName);
 
@@ -440,8 +489,17 @@ class StorageManager {
     static get(category) {
         return JSON.parse(localStorage.getItem(category)) || [];
     }
+
     static set(category, todos) {
         localStorage.setItem(category, JSON.stringify(todos));
+    }
+
+    static removeCat(catName) {
+        localStorage.removeItem(catName);
+    }
+
+    static removeAllCats() {
+        localStorage.clear();
     }
 }
 
@@ -475,30 +533,30 @@ class NewToDo {
         }
     }
 
-    static updatePriority(category, todoIdentifier, newPriority) {
-        const todos = TodoCategories.getToDos(category);
-        const targetToDo = todos.find(
-            (todo) => todo.todoIdentifier === todoIdentifier
-        );
-        if (targetToDo) {
-            targetToDo.priority = newPriority;
-            StorageManager.set(category, todos);
+    // static updatePriority(category, todoIdentifier, newPriority) {
+    //     const todos = TodoCategories.getToDos(category);
+    //     const targetToDo = todos.find(
+    //         (todo) => todo.todoIdentifier === todoIdentifier
+    //     );
+    //     if (targetToDo) {
+    //         targetToDo.priority = newPriority;
+    //         StorageManager.set(category, todos);
 
-            console.log(`Priority updated successfully.`);
-        }
-    }
+    //         console.log(`Priority updated successfully.`);
+    //     }
+    // }
 
-    static updateDueDate(category, todoIdentifier, newDueDate) {
-        const todos = TodoCategories.getToDos(category);
-        const targetToDo = todos.find(
-            (todo) => todo.todoIdentifier === todoIdentifier
-        );
-        if (targetToDo) {
-            targetToDo.dueDate = newDueDate;
-            StorageManager.set(category, todos);
-            console.log(`Due date updated successfully.`);
-        }
-    }
+    // static updateDueDate(category, todoIdentifier, newDueDate) {
+    //     const todos = TodoCategories.getToDos(category);
+    //     const targetToDo = todos.find(
+    //         (todo) => todo.todoIdentifier === todoIdentifier
+    //     );
+    //     if (targetToDo) {
+    //         targetToDo.dueDate = newDueDate;
+    //         StorageManager.set(category, todos);
+    //         console.log(`Due date updated successfully.`);
+    //     }
+    // }
 }
 
 // manages categories of todos
@@ -539,6 +597,7 @@ class TodoCategories {
     static getToDos(category) {
         return StorageManager.get(category);
     }
+
 
     // save todo into category and then into localStorage
     static saveToDoToCategory(category, todo) {
@@ -588,6 +647,8 @@ Object.freeze(todoCategories); // Optional: to make the singleton instance immut
 // populate the main page with all the todos of the user
 // const items = Object.entries(localStorage).map((item) => item);
 
+
+
 for (let index = 0; index < items.length; index++) {
 
     const categoryName = items[index][0];
@@ -615,6 +676,21 @@ for (let index = 0; index < items.length; index++) {
         singleCatToDos_categoryName.classList.add("categoryName");
         singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category - Current Todos`;
 
+        const delCatBtn = document.createElement('button');
+        delCatBtn.textContent = 'Delete this category';
+        delCatBtn.setAttribute('type', 'button');
+        delCatBtn.classList.add('delCatBtn');
+        delCatBtn.addEventListener('click', () => {
+            const deleteCat = confirm("Sure to delete this category?");
+            if (deleteCat) {
+                StorageManager.removeCat(categoryName);
+                location.reload();
+            } else {
+                alert('Your category is not deleted.');
+            }
+        })
+        singleCatToDos_categoryName.appendChild(delCatBtn);
+        
         singleCatToDos.appendChild(singleCatToDos_categoryName);
 
         const singleCatToDos_categoryToDos = document.createElement("div");
