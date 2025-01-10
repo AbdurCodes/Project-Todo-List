@@ -1,10 +1,6 @@
-// filter various todos based on various params
-// current todos filter based on Completed: false
-// completed todos filter based on Completed: true
-// missed todos filter based on : relativeTime contains 'ago'
-
 import './style.css';
 import { format, parseISO, formatDistanceToNow } from "date-fns";
+
 
 const closeModal = document.querySelector("dialog .modalCloseBtn #dialogCloseBtn");
 const selectElement = document.getElementById("todosCats");
@@ -19,60 +15,130 @@ const addToDoBtn = document.querySelector(".addNewToDoBtnMain");
 const dialog = document.querySelector("dialog");
 const dialogHeading = document.querySelector("dialog h2");
 const items = Object.entries(localStorage).map((item) => item);
-// console.log(items);
 
 
+function removeMarkCompAndEditTodoBtns() {
+    const allMarkCompBtns = document.querySelectorAll('.markCompletedBtn');
+    Array.from(allMarkCompBtns, (item) => { item.style.display = 'none' });
+    const allEditTodoBtns = document.querySelectorAll('.editToDoBtn');
+    Array.from(allEditTodoBtns, (item) => { item.style.display = 'none' });
+}
 
 
 completedToDosCatBtn.addEventListener('click', () => {
     DOMManager.clearAllTodos();
-    const categoryToDos = TodoCategories.getToDos('completedToDosCat');
+    for (let index = 0; index < items.length; index++) {
 
-    const todosContainer = document.querySelector(".todosContainer");
+        const categoryName = items[index][0];
 
-    const singleCatToDos = document.createElement("div");
-    singleCatToDos.classList.add("singleCatToDos");
+        const categoryToDos = JSON.parse(items[index][1]);
 
-    const singleCatToDos_categoryName = document.createElement("h2");
-    singleCatToDos_categoryName.classList.add("categoryName");
-    singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter('completedToDosCat')} Category Todos`;
+        const todosContainer = document.querySelector(".todosContainer");
 
-    singleCatToDos.appendChild(singleCatToDos_categoryName);
+        const singleCatToDos = document.createElement("div");
+        singleCatToDos.classList.add("singleCatToDos");
 
-    const singleCatToDos_categoryToDos = document.createElement("div");
-    singleCatToDos_categoryToDos.classList.add("categoryToDos");
+        const singleCatToDos_categoryName = document.createElement("h2");
+        singleCatToDos_categoryName.classList.add("categoryName");
+        singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category - Completed Todos`;
+        singleCatToDos.appendChild(singleCatToDos_categoryName);
 
-    if (categoryToDos.length === 0) {
-        const noToDoMsg = document.createElement('p');
-        noToDoMsg.textContent = "No todos here.";
-        singleCatToDos_categoryToDos.appendChild(noToDoMsg);
-        singleCatToDos.appendChild(singleCatToDos_categoryToDos);
-    }
-    else {
-        for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
-            const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], 'completedToDosCat');
-            singleCatToDos_categoryToDos.appendChild(todoItem);
+        const singleCatToDos_categoryToDos = document.createElement("div");
+        singleCatToDos_categoryToDos.classList.add("categoryToDos");
+
+        if (categoryToDos.length === 0) {
+            const noToDoMsg = document.createElement('p');
+            noToDoMsg.textContent = "No todos here what to say of completed todos.";
+            singleCatToDos_categoryToDos.appendChild(noToDoMsg);
             singleCatToDos.appendChild(singleCatToDos_categoryToDos);
         }
+        else {
+            const compTodos = categoryToDos.filter(todo => {
+                const parsedDate = parseISO(todo.dueDate);
+                const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
+                return !relativeTime.includes('ago') && todo.isCompleted === true;
+            });
+
+            if (isNaN(compTodos)) {
+                for (let todoIndex = 0; todoIndex < compTodos.length; todoIndex++) {
+                    const todoItem = DOMManager.renderToDoToDOM(compTodos[todoIndex], categoryName);
+                    singleCatToDos_categoryToDos.appendChild(todoItem);
+                    singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+                }
+            }
+            else {
+                const noToDoMsg = document.createElement('p');
+                noToDoMsg.textContent = "No completed todos here.";
+                singleCatToDos_categoryToDos.appendChild(noToDoMsg);
+                singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+            }
+        }
+        todosContainer.appendChild(singleCatToDos);
     }
-
-    todosContainer.appendChild(singleCatToDos);
-})
-
+    removeMarkCompAndEditTodoBtns();
+});
 
 
 missedToDosCatBtn.addEventListener('click', () => {
-    TodoCategories.getToDos('missedToDosCat');
+    DOMManager.clearAllTodos();
+    for (let index = 0; index < items.length; index++) {
 
+        const categoryName = items[index][0];
+
+        const categoryToDos = JSON.parse(items[index][1]);
+
+        const todosContainer = document.querySelector(".todosContainer");
+
+        const singleCatToDos = document.createElement("div");
+        singleCatToDos.classList.add("singleCatToDos");
+
+        const singleCatToDos_categoryName = document.createElement("h2");
+        singleCatToDos_categoryName.classList.add("categoryName");
+        singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category - Missed Todos`;
+
+        singleCatToDos.appendChild(singleCatToDos_categoryName);
+
+        const singleCatToDos_categoryToDos = document.createElement("div");
+        singleCatToDos_categoryToDos.classList.add("categoryToDos");
+
+        if (categoryToDos.length === 0) {
+            const noToDoMsg = document.createElement('p');
+            noToDoMsg.textContent = "No todos here what to say of missed todos.";
+            singleCatToDos_categoryToDos.appendChild(noToDoMsg);
+            singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+        }
+        else {
+            const missedTodos = categoryToDos.filter(todo => {
+                const parsedDate = parseISO(todo.dueDate);
+                const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
+                return relativeTime.includes('ago') && todo.isCompleted === false;
+            });
+
+            if (isNaN(missedTodos)) {
+                for (let todoIndex = 0; todoIndex < missedTodos.length; todoIndex++) {
+                    const todoItem = DOMManager.renderToDoToDOM(missedTodos[todoIndex], categoryName);
+                    singleCatToDos_categoryToDos.appendChild(todoItem);
+                    singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+                }
+            }
+            else {
+                const noToDoMsg = document.createElement('p');
+                noToDoMsg.textContent = "No missed todos here.";
+                singleCatToDos_categoryToDos.appendChild(noToDoMsg);
+                singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+            }
+        }
+        todosContainer.appendChild(singleCatToDos);
+    }
+    removeMarkCompAndEditTodoBtns();
 })
-
-
 
 
 function capitalizeFirstLetter(str) {
     if (!str) return str;
     return str.replace(/^\w/, c => c.toUpperCase());
 }
+
 
 function populateNewCatInMainMenu(catName) {
     const mainMenu = document.querySelector(".mainMenu");
@@ -95,22 +161,37 @@ function populateNewCatInMainMenu(catName) {
 
                 const singleCatToDos_categoryName = document.createElement("h2");
                 singleCatToDos_categoryName.classList.add("categoryName");
-                singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(catName)} Category Todos`;
+                singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(catName)} Category - Current Todos`;
 
                 singleCatToDos.appendChild(singleCatToDos_categoryName);
 
                 const singleCatToDos_categoryToDos = document.createElement("div");
                 singleCatToDos_categoryToDos.classList.add("categoryToDos");
 
+
                 if (categoryToDos.length === 0) {
                     const noToDoMsg = document.createElement('p');
-                    noToDoMsg.textContent = "No todos here.";
+                    noToDoMsg.textContent = "No todos here what to say of current todos.";
                     singleCatToDos_categoryToDos.appendChild(noToDoMsg);
                     singleCatToDos.appendChild(singleCatToDos_categoryToDos);
-                } else {
-                    for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
-                        const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], catName);
-                        singleCatToDos_categoryToDos.appendChild(todoItem);
+                }
+                else {
+                    const currentTodos = categoryToDos.filter(todo => {
+                        const parsedDate = parseISO(todo.dueDate);
+                        const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
+                        return !relativeTime.includes('ago') && todo.isCompleted === false;
+                    });
+                    if (isNaN(currentTodos)) {
+                        for (let todoIndex = 0; todoIndex < currentTodos.length; todoIndex++) {
+                            const todoItem = DOMManager.renderToDoToDOM(currentTodos[todoIndex], categoryName);
+                            singleCatToDos_categoryToDos.appendChild(todoItem);
+                            singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+                        }
+                    }
+                    else {
+                        const noToDoMsg = document.createElement('p');
+                        noToDoMsg.textContent = "No current todos here.";
+                        singleCatToDos_categoryToDos.appendChild(noToDoMsg);
                         singleCatToDos.appendChild(singleCatToDos_categoryToDos);
                     }
                 }
@@ -122,15 +203,15 @@ function populateNewCatInMainMenu(catName) {
     mainMenu.prepend(liElement);
 }
 
+
 function resetFormFields() {
     document.getElementById("todoTitle").value = "";
     document.getElementById("todoDesc").value = "";
     document.getElementById("todoDueDate").value = "";
     document.getElementById("todoPriority").value = "";
     document.getElementById("todoNotes").value = "";
-    // document.getElementById("oldCategory").remove();
-    // document.getElementById("oldCategoryIdentifier").remove();
 }
+
 
 function createNewCatBtnClickHandler() {
     addNewCatLabel.style.display = "block";
@@ -139,6 +220,7 @@ function createNewCatBtnClickHandler() {
     createNewCatBtn.style.display = "none"; // hides the 'create new category' btn after a single click
     createNewCatBtn.removeEventListener("click", createNewCatBtnClickHandler);
 }
+
 
 function addNewCatBtnClickHandler() {
     const newCategory = newCatInput.value.trim();
@@ -165,7 +247,6 @@ function addNewCatBtnClickHandler() {
         alert("Please enter a valid category name.");
     }
 }
-
 
 
 function handleFormSubmit(event) {
@@ -223,7 +304,6 @@ addToDoBtn.addEventListener("click", () => {
 });
 
 
-
 class DOMManager {
     static renderToDoToDOM(todo, todoCategory) {
 
@@ -243,7 +323,7 @@ class DOMManager {
         const parsedDate = parseISO(todo.dueDate);
         const formattedDueDate = format(parsedDate, "EEEE, MMMM d, yyyy 'at' h:mm a");
         const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
-        dueDate.textContent = `Due Date: ${formattedDueDate} (due ${relativeTime})`;
+        dueDate.textContent = `Due Date: ${formattedDueDate} (${relativeTime})`;
         dueDate.classList.add('todoItemField');
 
         const priority = document.createElement("p");
@@ -269,17 +349,17 @@ class DOMManager {
 
         const markCompletedBtn = document.createElement("button");
         markCompletedBtn.textContent = `Mark as completed`;
-        markCompletedBtn.classList.add('todoItemField', 'todoItemBtns');
+        markCompletedBtn.classList.add('todoItemField', 'markCompletedBtn', 'todoItemBtns');
         pEditRemoveBtnsContainer.appendChild(markCompletedBtn);
 
         const removeBtn = document.createElement("button");
         removeBtn.textContent = `Remove this todo`;
-        removeBtn.classList.add('todoItemField', 'todoItemBtns');
+        removeBtn.classList.add('todoItemField', 'removeBtn', 'todoItemBtns');
         pEditRemoveBtnsContainer.appendChild(removeBtn);
 
         const editToDoBtn = document.createElement("button");
         editToDoBtn.textContent = `Edit this todo`;
-        editToDoBtn.classList.add('todoItemField', 'todoItemBtns');
+        editToDoBtn.classList.add('todoItemField', 'editToDoBtn', 'todoItemBtns');
         pEditRemoveBtnsContainer.appendChild(editToDoBtn);
 
         todoItem.appendChild(title);
@@ -295,7 +375,7 @@ class DOMManager {
             if (yes) {
                 NewToDo.toggleCompletion(todo.category, todo.todoIdentifier);
                 // todo item background change to green
-                location.reload();
+                // location.reload();
                 alert('Todo completed and added to "completed todos".');
             }
             else {
@@ -390,6 +470,7 @@ class NewToDo {
             targetToDo.isCompleted = !targetToDo.isCompleted;
             console.log(targetToDo.isCompleted);
             StorageManager.set(category, todos);
+            console.log((TodoCategories.getToDos(category)));
             console.log(`Todo completed successfully.`);
         }
     }
@@ -402,6 +483,7 @@ class NewToDo {
         if (targetToDo) {
             targetToDo.priority = newPriority;
             StorageManager.set(category, todos);
+
             console.log(`Priority updated successfully.`);
         }
     }
@@ -531,31 +613,44 @@ for (let index = 0; index < items.length; index++) {
 
         const singleCatToDos_categoryName = document.createElement("h2");
         singleCatToDos_categoryName.classList.add("categoryName");
-        singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category Todos`;
+        singleCatToDos_categoryName.textContent = `${capitalizeFirstLetter(categoryName)} Category - Current Todos`;
 
         singleCatToDos.appendChild(singleCatToDos_categoryName);
 
         const singleCatToDos_categoryToDos = document.createElement("div");
         singleCatToDos_categoryToDos.classList.add("categoryToDos");
 
+
         if (categoryToDos.length === 0) {
             const noToDoMsg = document.createElement('p');
-            noToDoMsg.textContent = "No todos here.";
+            noToDoMsg.textContent = "No todos here what to say of current todos.";
             singleCatToDos_categoryToDos.appendChild(noToDoMsg);
             singleCatToDos.appendChild(singleCatToDos_categoryToDos);
         }
         else {
-            for (let todoIndex = 0; todoIndex < categoryToDos.length; todoIndex++) {
-                const todoItem = DOMManager.renderToDoToDOM(categoryToDos[todoIndex], categoryName);
-                singleCatToDos_categoryToDos.appendChild(todoItem);
+            const currentTodos = categoryToDos.filter(todo => {
+                const parsedDate = parseISO(todo.dueDate);
+                const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
+                return !relativeTime.includes('ago') && todo.isCompleted === false;
+            });
+
+            if (isNaN(currentTodos)) {
+                for (let todoIndex = 0; todoIndex < currentTodos.length; todoIndex++) {
+                    const todoItem = DOMManager.renderToDoToDOM(currentTodos[todoIndex], categoryName);
+                    singleCatToDos_categoryToDos.appendChild(todoItem);
+                    singleCatToDos.appendChild(singleCatToDos_categoryToDos);
+                }
+            }
+            else {
+                const noToDoMsg = document.createElement('p');
+                noToDoMsg.textContent = "No current todos here.";
+                singleCatToDos_categoryToDos.appendChild(noToDoMsg);
                 singleCatToDos.appendChild(singleCatToDos_categoryToDos);
             }
         }
         populateNewCatInMainMenu(categoryName);
         todosContainer.appendChild(singleCatToDos);
     }
-
-
 }
 
 
