@@ -289,10 +289,9 @@ function addNewCatBtnClickHandler() {
         selectElement.value = optionEl.value;
 
         const categories = Object.keys(todoCategories.categories);
-        if (!categories.includes(newCategory)) {
-            todoCategories.createNewCat(newCategory);
+        if (!categories.includes(newCategory.toLowerCase())) {
+            todoCategories.createNewCat(newCategory.toLowerCase());
         }
-
         addNewCatBtn.removeEventListener("click", addNewCatBtnClickHandler);
     } else {
         alert("Please enter a valid category name.");
@@ -667,6 +666,7 @@ for (let index = 0; index < items.length; index++) {
         const categoryToDos = JSON.parse(items[index][1]);
 
         const todosContainer = document.querySelector(".todosContainer");
+        document.querySelector('.homePageDisplay').style.display = 'none';
 
         const singleCatToDos = document.createElement("div");
         singleCatToDos.classList.add("singleCatToDos");
