@@ -10,14 +10,15 @@ const myForm = document.getElementById("myForm");
 const createNewCatBtn = document.getElementById("createNewCatBtn");
 const addNewCatBtn = document.getElementById("addNewCatBtn");
 const completedToDosCatBtn = document.getElementById("completedToDosCatBtn");
-// const delCatBtn = document.querySelector('.delCatBtn');
 const missedToDosCatBtn = document.getElementById("missedToDosCatBtn");
 const addToDoBtn = document.querySelector(".addNewToDoBtnMain");
 const dialog = document.querySelector("dialog");
 const dialogHeading = document.querySelector("dialog h2");
-const items = Object.entries(localStorage).map((item) => item);
 
 
+function sortTodos() {
+
+}
 
 
 function removeMarkCompAndEditTodoBtns() {
@@ -339,10 +340,12 @@ function handleFormSubmit(event) {
     myForm.removeEventListener("submit", handleFormSubmit);
 }
 
+
 function dialogCloseBtnHandler() {
     dialog.close();
     closeModal.removeEventListener("click", dialogCloseBtnHandler);
 }
+
 
 function createNewCatEventListeners() {
     createNewCatBtn.addEventListener("click", createNewCatBtnClickHandler);
@@ -350,6 +353,7 @@ function createNewCatEventListeners() {
     myForm.addEventListener("submit", handleFormSubmit);
     closeModal.addEventListener("click", dialogCloseBtnHandler);
 }
+
 
 addToDoBtn.addEventListener("click", () => {
     dialogHeading.textContent = "Add New Todo";
@@ -565,6 +569,7 @@ class NewToDo {
     // }
 }
 
+
 // manages categories of todos
 class TodoCategories {
     constructor() {
@@ -638,23 +643,12 @@ const todoCategories = TodoCategories.getInstance();
 Object.freeze(todoCategories); // Optional: to make the singleton instance immutable
 
 
-// const categories = Object.keys(todoCategories.categories);
-// if (!categories.includes('completedToDosCat')) {
-//     todoCategories.createNewCat('completedToDosCat');
-// }
-// if (!categories.includes('missedToDosCat')) {
-//     todoCategories.createNewCat('missedToDosCat');
-// }
-
-
 // get all the items of localStorage in one go
 // Object.entries(localStorage);
 
+
 // populate the main page with all the todos of the user
-// const items = Object.entries(localStorage).map((item) => item);
-
-
-
+const items = Object.entries(localStorage).map((item) => item);
 for (let index = 0; index < items.length; index++) {
 
     const categoryName = items[index][0];
@@ -717,8 +711,21 @@ for (let index = 0; index < items.length; index++) {
             });
 
             if (isNaN(currentTodos)) {
-                for (let todoIndex = 0; todoIndex < currentTodos.length; todoIndex++) {
-                    const todoItem = DOMManager.renderToDoToDOM(currentTodos[todoIndex], categoryName);
+
+                const noPriorityTodos = currentTodos.filter((todo) => todo.priority == 0)
+                // console.log(noPriorityTodos);
+                const priorityTodos = currentTodos.filter((todo) => todo.priority != 0)
+                // console.log(priorityTodos);
+
+                const sortedPriorityTodos = priorityTodos.sort((a, b) => {
+                    return a.priority - b.priority
+                })
+                // console.log(sortedPriorityTodos);
+                const sortedCurrentTodos = sortedPriorityTodos.concat(noPriorityTodos);
+                // console.log(sortedCurrentTodos);
+
+                for (let todoIndex = 0; todoIndex < sortedCurrentTodos.length; todoIndex++) {
+                    const todoItem = DOMManager.renderToDoToDOM(sortedCurrentTodos[todoIndex], categoryName);
                     todoItem.style.backgroundColor = 'blue';
                     todoItem.style.color = 'white';
                     singleCatToDos_categoryToDos.appendChild(todoItem);
