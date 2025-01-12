@@ -1,138 +1,194 @@
 /*!*****************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./src/style.css ***!
   \*****************************************************************/
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body{
-    background-color: rebeccapurple;
+body {
+    background-image: linear-gradient(
+        45deg,
+        magenta,
+        rebeccapurple,
+        dodgerblue,
+        green
+      );
     color: wheat;
 
-    & > h1 {
+    &>h1 {
         text-align: center;
     }
 }
 
-#oldCategory, #oldCategoryIdentifier{
+.todosContainer {
+    min-height: calc(100vh - 185px); 
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#oldCategory,
+#oldCategoryIdentifier {
     display: none;
 }
 
-h1{
+.topMenu {
     background-color: black;
     color: wheat;
-    padding: 19px;
+    text-align: center;
 }
 
-.categoryToDos{
+h1 {
+    padding: 19px;
+    display: inline-block;
+}
+
+.missedCompletedTodosBtns {
+    font-size: 1.2rem;
+    padding: 7px;
+    width: 20rem;
+    cursor: pointer;
+    margin: 0px 17px;
+    color: wheat;
+}
+
+.missedCompletedTodosBtns:nth-of-type(1) {
+    background-color: rgb(55, 134, 59);
+
+    &:hover {
+        background-color: rgb(64, 167, 70);
+        color: black;
+    }
+}
+
+.missedCompletedTodosBtns:nth-of-type(2) {
+    background-color: rgb(139, 43, 43);
+
+    &:hover {
+        background-color: rgb(189, 56, 56);
+        color: black;
+    }
+}
+
+.categoryToDos {
     border: 2px solid red;
     background-color: rgb(55, 34, 75);
-    /* text-align: center; */
-    /* display: flex; 
-    justify-content: center; */
-}
-.categoryName{
-    border: 2px solid red;
-    /* background-color: rgb(55, 34, 75); */
 }
 
-.todoItemField{
+.categoryName {
+    border: 2px solid red;
+}
+
+.todoItemField {
     padding: 8px;
 }
 
-.isCompletedP{
+.isCompletedP {
     margin-right: auto;
 }
 
-.pEditRemoveBtnsContainer{
-    /* border: 2px solid red; */
+.pEditRemoveBtnsContainer {
     display: flex;
 }
 
-.todoItemBtns{
+.todoItemBtns {
     margin: 0px 5px;
     border-radius: 6px;
 }
 
-.todoItemBtns:nth-of-type(1){
+.markCompletedBtn {
     background-color: rgb(142, 248, 138);
     color: black;
+
     &:hover {
         background-color: rgb(56, 224, 50);
         cursor: pointer;
     }
 }
 
-.todoItemBtns:nth-of-type(2){
+.removeBtn {
     background-color: rgb(218, 79, 79);
     color: white;
+
     &:hover {
         background-color: rgb(196, 25, 25);
         cursor: pointer;
     }
 }
 
-.todoItemBtns:nth-of-type(3){
+.editToDoBtn {
     background-color: rgb(57, 60, 255);
     color: white;
+
     &:hover {
         background-color: rgb(14, 17, 219);
         cursor: pointer;
     }
 }
 
-.todoItem{
+.todoItem {
     border: 1px solid rgb(79, 206, 211);
     margin: 2%;
-    /* width: 60%; */
 }
 
 .required {
     color: red;
 }
 
-.mainMenu{
-    
+.mainMenu {
+
     display: flex;
     list-style-type: none;
     border-bottom: 2px solid black;
     justify-content: space-evenly;
     font-family: Arial, Helvetica, sans-serif;
-    
-    
-    & li button{
+
+
+    & li button {
         font-size: 1.3rem;
         border-radius: 112px;
         padding: 9px;
         width: 190px;
         cursor: pointer;
         border: 7px solid yellowgreen;
-        
+
         &:hover {
             background-color: rgb(245, 188, 82);
             border: 7px solid green;
         }
-        
-        &.addNewToDoBtnMain{
+
+        &.addNewToDoBtnMain {
             width: 300px;
             border-radius: 0px;
-            border: 7px solid rgb(5, 7, 2);
+            border: 7px solid rgb(63, 103, 214);
             background-color: rgb(21, 247, 32);
             color: rgb(0, 0, 0);
-            &:hover{
+
+            &:hover {
                 background-color: greenyellow;
+                border: 7px solid rgb(30, 83, 226);
             }
         }
     }
 }
 
-.categoryName{
+.categoryName {
     text-align: center;
     font-size: 1.6rem;
     padding: 20px 12px;
-    background-color: rgb(42, 45, 255);
+    background-color: rgb(205, 207, 42);
+    color: black;
+}
+
+
+.delCatBtn {
+    padding: 9px;
+    width: 190px;
+    margin: 0px 18px;
+    background-color: crimson;
+    color: white;
 }
 
 
@@ -172,7 +228,7 @@ dialog {
         height: 30px;
         font-size: 1.2rem;
     }
-    
+
     & textarea {
         width: 60%;
         height: 60px;
@@ -208,7 +264,7 @@ dialog {
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     & input {
         width: 20px;
         height: 20px;
@@ -238,3 +294,27 @@ form div label:not(label[for="isRead"]) {
 }
 
 /* modal styling ends */
+
+
+
+
+
+footer {
+    background-color: black;
+    color: white;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    bottom: 0px;
+
+    & a {
+        color: rgb(159, 161, 155);
+        text-decoration: none;
+
+        &:hover {
+            color: rgb(204, 229, 153);
+        }
+    }
+}
