@@ -16,11 +16,6 @@ const dialog = document.querySelector("dialog");
 const dialogHeading = document.querySelector("dialog h2");
 
 
-function sortTodos() {
-
-}
-
-
 function removeMarkCompAndEditTodoBtns() {
     const allMarkCompBtns = document.querySelectorAll('.markCompletedBtn');
     Array.from(allMarkCompBtns, (item) => { item.style.display = 'none' });
@@ -74,9 +69,7 @@ completedToDosCatBtn.addEventListener('click', () => {
         }
         else {
             const compTodos = categoryToDos.filter(todo => {
-                const parsedDate = parseISO(todo.dueDate);
-                const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
-                return !relativeTime.includes('ago') && todo.isCompleted === true;
+                return todo.isCompleted === true;
             });
 
             if (isNaN(compTodos)) {
@@ -184,6 +177,7 @@ function populateNewCatInMainMenu(catName) {
     const liElement = document.createElement("li");
     const button = document.createElement("button");
     button.textContent = catName;
+    button.title = `${catName} category current todos`;
     button.type = "button";
     button.addEventListener('click', () => {
         DOMManager.clearAllTodos();
@@ -266,6 +260,7 @@ function resetFormFields() {
     document.getElementById("todoDueDate").value = "";
     document.getElementById("todoPriority").value = "0";
     document.getElementById("todoNotes").value = "";
+    // document.getElementById("myForm").reset();
 }
 
 
@@ -336,7 +331,7 @@ function handleFormSubmit(event) {
 
     dialog.close();
     console.log("Todo added successfully.");
-    // location.reload();
+    location.reload();
     myForm.removeEventListener("submit", handleFormSubmit);
 }
 
@@ -378,7 +373,6 @@ class DOMManager {
         description.classList.add('todoItemField');
 
         const dueDate = document.createElement("p");
-        // const formattedDueDate = dateFormatter(todo.dueDate);
         const parsedDate = parseISO(todo.dueDate);
         const formattedDueDate = format(parsedDate, "EEEE, MMMM d, yyyy 'at' h:mm a");
         const relativeTime = formatDistanceToNow(parsedDate, { addSuffix: true });
@@ -433,8 +427,7 @@ class DOMManager {
             const yes = confirm("Are you sure this todo is completed?");
             if (yes) {
                 NewToDo.toggleCompletion(todo.category, todo.todoIdentifier);
-                // todo item background change to green
-                // location.reload();
+                location.reload();
                 alert('Todo completed and added to "completed todos".');
             }
             else {
@@ -534,11 +527,17 @@ class NewToDo {
         );
 
         if (targetToDo) {
-            console.log(targetToDo.isCompleted);
+            // console.log(targetToDo.isCompleted);
             targetToDo.isCompleted = !targetToDo.isCompleted;
-            console.log(targetToDo.isCompleted);
+            // document.getElementById("todoDueDate").type = "text";
+            
+            // console.log(targetToDo);
+            // console.log(targetToDo.dueDate);
+            // targetToDo.dueDate.type = 'text';
+            // localStorage.removeItem(targetToDo.dueDate);
+
             StorageManager.set(category, todos);
-            console.log((TodoCategories.getToDos(category)));
+            // console.log((TodoCategories.getToDos(category)));
             console.log(`Todo completed successfully.`);
         }
     }
@@ -712,17 +711,14 @@ for (let index = 0; index < items.length; index++) {
 
             if (isNaN(currentTodos)) {
 
-                const noPriorityTodos = currentTodos.filter((todo) => todo.priority == 0)
-                // console.log(noPriorityTodos);
-                const priorityTodos = currentTodos.filter((todo) => todo.priority != 0)
-                // console.log(priorityTodos);
+                const noPriorityTodos = currentTodos.filter((todo) => todo.priority == 0);
+                const priorityTodos = currentTodos.filter((todo) => todo.priority != 0);
 
                 const sortedPriorityTodos = priorityTodos.sort((a, b) => {
                     return a.priority - b.priority
                 })
-                // console.log(sortedPriorityTodos);
+
                 const sortedCurrentTodos = sortedPriorityTodos.concat(noPriorityTodos);
-                // console.log(sortedCurrentTodos);
 
                 for (let todoIndex = 0; todoIndex < sortedCurrentTodos.length; todoIndex++) {
                     const todoItem = DOMManager.renderToDoToDOM(sortedCurrentTodos[todoIndex], categoryName);
@@ -746,5 +742,4 @@ for (let index = 0; index < items.length; index++) {
 
 
 // TODO
-// 1. sort todos according to priority
-// 2. collapse a todo to show only title and duedate
+// 1. collapse a todo to show only title and duedate
