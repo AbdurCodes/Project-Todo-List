@@ -81,6 +81,8 @@ completedToDosCatBtn.addEventListener('click', () => {
             if (isNaN(compTodos)) {
                 for (let todoIndex = 0; todoIndex < compTodos.length; todoIndex++) {
                     const todoItem = DOMManager.renderToDoToDOM(compTodos[todoIndex], categoryName);
+                    todoItem.style.backgroundColor = 'green';
+                    todoItem.style.color = 'white';
                     singleCatToDos_categoryToDos.appendChild(todoItem);
                     singleCatToDos.appendChild(singleCatToDos_categoryToDos);
                 }
@@ -151,6 +153,8 @@ missedToDosCatBtn.addEventListener('click', () => {
             if (isNaN(missedTodos)) {
                 for (let todoIndex = 0; todoIndex < missedTodos.length; todoIndex++) {
                     const todoItem = DOMManager.renderToDoToDOM(missedTodos[todoIndex], categoryName);
+                    todoItem.style.backgroundColor = 'red';
+                    todoItem.style.color = 'white';
                     singleCatToDos_categoryToDos.appendChild(todoItem);
                     singleCatToDos.appendChild(singleCatToDos_categoryToDos);
                 }
@@ -233,6 +237,8 @@ function populateNewCatInMainMenu(catName) {
                     if (isNaN(currentTodos)) {
                         for (let todoIndex = 0; todoIndex < currentTodos.length; todoIndex++) {
                             const todoItem = DOMManager.renderToDoToDOM(currentTodos[todoIndex], categoryName);
+                            todoItem.style.backgroundColor = 'blue';
+                            todoItem.style.color = 'white';
                             singleCatToDos_categoryToDos.appendChild(todoItem);
                             singleCatToDos.appendChild(singleCatToDos_categoryToDos);
                         }
@@ -257,7 +263,7 @@ function resetFormFields() {
     document.getElementById("todoTitle").value = "";
     document.getElementById("todoDesc").value = "";
     document.getElementById("todoDueDate").value = "";
-    document.getElementById("todoPriority").value = "";
+    document.getElementById("todoPriority").value = "0";
     document.getElementById("todoNotes").value = "";
 }
 
@@ -690,7 +696,7 @@ for (let index = 0; index < items.length; index++) {
             }
         })
         singleCatToDos_categoryName.appendChild(delCatBtn);
-        
+
         singleCatToDos.appendChild(singleCatToDos_categoryName);
 
         const singleCatToDos_categoryToDos = document.createElement("div");
@@ -713,6 +719,8 @@ for (let index = 0; index < items.length; index++) {
             if (isNaN(currentTodos)) {
                 for (let todoIndex = 0; todoIndex < currentTodos.length; todoIndex++) {
                     const todoItem = DOMManager.renderToDoToDOM(currentTodos[todoIndex], categoryName);
+                    todoItem.style.backgroundColor = 'blue';
+                    todoItem.style.color = 'white';
                     singleCatToDos_categoryToDos.appendChild(todoItem);
                     singleCatToDos.appendChild(singleCatToDos_categoryToDos);
                 }
@@ -731,13 +739,5 @@ for (let index = 0; index < items.length; index++) {
 
 
 // TODO
-// changing todo priority
-// changing due date of a todo
-
-
-
-// Future todos
-// a menu that contains ::::
-//      1. completed todos (green)
-//      2. missed todos (red)
-//      3. homepage contains current todos (blue)
+// 1. sort todos according to priority
+// 2. collapse a todo to show only title and duedate
