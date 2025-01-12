@@ -29,6 +29,36 @@ body {
     flex-direction: column;
 }
 
+.homePageDisplay{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    & h2{
+        margin: 18px 0px;
+    }
+    & h2:nth-child(2){
+        font-size: 5em;
+        color: yellow;
+        margin-top: 50px;
+    }
+    & h2:nth-child(3){
+        font-size: 4em;
+        color: black;
+
+        & span:nth-child(1){
+            color: rgb(23, 23, 131);
+        }
+        & span:nth-child(2){
+            color: rgb(160, 36, 36);
+        }
+        & span:nth-child(3){
+            color: rgb(15, 78, 15);
+        }
+    }
+}
+
 #oldCategory,
 #oldCategoryIdentifier {
     display: none;
@@ -165,6 +195,7 @@ h1 {
             border: 7px solid rgb(63, 103, 214);
             background-color: rgb(21, 247, 32);
             color: rgb(0, 0, 0);
+            /* position: absolute; top: 20px; right: 20px; */
 
             &:hover {
                 background-color: greenyellow;
@@ -173,6 +204,7 @@ h1 {
         }
     }
 }
+
 
 .categoryName {
     text-align: center;
@@ -294,8 +326,6 @@ form div label:not(label[for="isRead"]) {
 }
 
 /* modal styling ends */
-
-
 
 
 
