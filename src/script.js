@@ -25,6 +25,9 @@ function removeMarkCompAndEditTodoBtns() {
 
 
 completedToDosCatBtn.addEventListener('click', () => {
+    if (items.length === 0) {
+        return alert("No todos added yet.");
+    }
     DOMManager.clearAllTodos();
     for (let index = 0; index < items.length; index++) {
 
@@ -95,6 +98,9 @@ completedToDosCatBtn.addEventListener('click', () => {
 
 
 missedToDosCatBtn.addEventListener('click', () => {
+    if (items.length === 0) {
+        return alert("No todos added yet.");
+    }
     DOMManager.clearAllTodos();
     for (let index = 0; index < items.length; index++) {
 
@@ -526,45 +532,11 @@ class NewToDo {
         );
 
         if (targetToDo) {
-            // console.log(targetToDo.isCompleted);
             targetToDo.isCompleted = !targetToDo.isCompleted;
-            // document.getElementById("todoDueDate").type = "text";
-            
-            // console.log(targetToDo);
-            // console.log(targetToDo.dueDate);
-            // targetToDo.dueDate.type = 'text';
-            // localStorage.removeItem(targetToDo.dueDate);
-
             StorageManager.set(category, todos);
-            // console.log((TodoCategories.getToDos(category)));
             console.log(`Todo completed successfully.`);
         }
     }
-
-    // static updatePriority(category, todoIdentifier, newPriority) {
-    //     const todos = TodoCategories.getToDos(category);
-    //     const targetToDo = todos.find(
-    //         (todo) => todo.todoIdentifier === todoIdentifier
-    //     );
-    //     if (targetToDo) {
-    //         targetToDo.priority = newPriority;
-    //         StorageManager.set(category, todos);
-
-    //         console.log(`Priority updated successfully.`);
-    //     }
-    // }
-
-    // static updateDueDate(category, todoIdentifier, newDueDate) {
-    //     const todos = TodoCategories.getToDos(category);
-    //     const targetToDo = todos.find(
-    //         (todo) => todo.todoIdentifier === todoIdentifier
-    //     );
-    //     if (targetToDo) {
-    //         targetToDo.dueDate = newDueDate;
-    //         StorageManager.set(category, todos);
-    //         console.log(`Due date updated successfully.`);
-    //     }
-    // }
 }
 
 
